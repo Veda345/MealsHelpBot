@@ -15,7 +15,7 @@ public class Recipe {
     @Nullable
     public String imgUrl;
 
-    Recipe(String id, String title, int time, int energy, String imgUrl) {
+    public Recipe(String id, String title, int time, int energy, String imgUrl) {
         this.id = id;
         this.title = title;
         this.time = time;

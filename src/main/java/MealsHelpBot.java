@@ -18,7 +18,9 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
         command2Replier.put(Commands.PFC, new PfcReply(this));
         command2Replier.put(Commands.RECOMMEND, new RecommendReply(this));
         command2Replier.put(Commands.NONE, new NoOpReply(this));
-
+        command2Replier.put(Commands.HELP, new HelpReply(this));
+        command2Replier.put(Commands.ADDTOFAV, new AddToFavReply(this));
+        command2Replier.put(Commands.FAV, new FavReply(this));
     }
 
     private Replier currentReplier = command2Replier.get(Commands.NONE);
@@ -76,7 +78,7 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
 
 
     private enum Commands {
-        CAL("/cal"), PFC("/pfc"), RECOMMEND("/recommend"), NONE("none");
+        CAL("/cal"), PFC("/pfc"), RECOMMEND("/recommend"), FAV("/fav"), HELP("/help"), ADDTOFAV("/addtofav"), NONE("none");
 
         public final String name;
 
