@@ -1,3 +1,5 @@
+package bot;
+
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,19 +13,22 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
 
     private static final String API_TOKEN = "424486608:AAHfZOwoCJt4Iok87Xn7Q-MVGq3_AClwaFE";
 
-    private static Map<Commands, Replier> command2Replier = new HashMap<>();
+    private static Map<MealsBotCommands, Replier> command2Replier = new HashMap<>();
 
     {
-        command2Replier.put(Commands.CAL, new CalReply(this));
-        command2Replier.put(Commands.PFC, new PfcReply(this));
-        command2Replier.put(Commands.RECOMMEND, new RecommendReply(this));
-        command2Replier.put(Commands.NONE, new NoOpReply(this));
-        command2Replier.put(Commands.HELP, new HelpReply(this));
-        command2Replier.put(Commands.ADDTOFAV, new AddToFavReply(this));
-        command2Replier.put(Commands.FAV, new FavReply(this));
+        command2Replier.put(MealsBotCommands.CAL, new CalReply(this));
+        command2Replier.put(MealsBotCommands.PFC, new PfcReply(this));
+        command2Replier.put(MealsBotCommands.RECOMMEND, new RecommendReply(this));
+        command2Replier.put(MealsBotCommands.NONE, new NoOpReply(this));
+        command2Replier.put(MealsBotCommands.HELP, new HelpReply(this));
+        command2Replier.put(MealsBotCommands.ADDTOFAV, new AddToFavReply(this));
+        command2Replier.put(MealsBotCommands.FAV, new FavReply(this));
+        command2Replier.put(MealsBotCommands.CLEAR, new ClearReply(this));
     }
 
-    private Replier currentReplier = command2Replier.get(Commands.NONE);
+    private Replier currentReplier = command2Replier.get(MealsBotCommands.NONE);
+
+    private MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -36,21 +41,21 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
             query = query.toLowerCase();
 
             if (query.startsWith("/")) {
-                Commands command = getNewCommand(query);
+                MealsBotCommands command = getNewCommand(query);
                 currentReplier = command2Replier.get(command);
-                if (currentReplier != null) { //todo else
+                if (currentReplier != null) {
                     currentReplier.initCall(update);
                 }
             } else {
                 currentReplier.reply(update);
+                System.out.println("Veda " + query);
             }
         }
     }
 
-
-    private Commands getNewCommand(String query) {
+    private MealsBotCommands getNewCommand(String query) {
         try {
-            return Commands.getCommandByName(query);
+            return MealsBotCommands.getCommandByName(query);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -70,35 +75,10 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
     @Override
     public void sendReply(SendMessage message) {
         try {
+            message.setReplyMarkup(replyKeyboard.getKeyboardMarkup());
             sendMessage(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
-        }
-    }
-
-
-    private enum Commands {
-        CAL("/cal"), PFC("/pfc"), RECOMMEND("/recommend"), FAV("/fav"), HELP("/help"), ADDTOFAV("/addtofav"), NONE("none");
-
-        public final String name;
-
-        Commands(String name) {
-            this.name = name;
-        }
-
-        public String getCommandName() {
-            return name;
-        }
-
-        public static Commands getCommandByName(String name) {
-            if (name != null) {
-                for (Commands command : values()) {
-                    if (command.name.equals(name)) {
-                        return command;
-                    }
-                }
-            }
-            return NONE;
         }
     }
 

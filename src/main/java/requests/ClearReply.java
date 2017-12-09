@@ -2,12 +2,16 @@ package requests;
 
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
+import utils.BeanCreator;
+import utils.RecommendCache;
 
-public class NoOpReply implements Replier {
+public class ClearReply implements Replier {
+
     //todo DI
     private ReplyCallback callback;
+    private RecommendCache recommendCache = BeanCreator.recommendCache();
 
-    public NoOpReply(ReplyCallback callback) {
+    public ClearReply(ReplyCallback callback) {
         this.callback = callback;
     }
 
@@ -18,7 +22,9 @@ public class NoOpReply implements Replier {
 
     @Override
     public void reply(Update update) {
-        answer(update, "Try another command2!");
+        Integer personId = update.getMessage().getFrom().getId();
+        recommendCache.deleteRecommended(personId);
+        answer(update, "All favorites cleared!");
     }
 
     private void answer(Update update, String reply) {

@@ -1,10 +1,11 @@
+package bot;
+
 import db.DbBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-import utils.RecommendCache;
 
 import java.io.*;
 
@@ -14,7 +15,7 @@ public class BotRunner {
 
 
     public static void main(String[] args) {
-        initDb();
+//        initDb();
         startBot();
     }
 

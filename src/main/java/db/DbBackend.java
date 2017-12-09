@@ -153,4 +153,15 @@ public class DbBackend implements DbContract {
         return null;
     }
 
+    public static boolean clearSavedRecipes(int personId) {
+        String query = "DELETE * FROM " + FAVRECIPE + " WHERE " + FavRecipeTable.PERSONID + "=" + personId;
+        try (Connection c = DriverManager.getConnection(DATABASE)) {
+            Statement stmt = c.createStatement();
+            return stmt.execute(query);
+        } catch (SQLException e) {
+            logger.error("Error while clearing person {} favourite recipes", personId, e);
+        }
+        return false;
+    }
+
 }
