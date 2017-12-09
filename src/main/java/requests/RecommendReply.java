@@ -4,6 +4,8 @@ import http.Recipe;
 import http.RecipesRequester;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
+import utils.BeanCreator;
+import utils.RecommendCache;
 
 public class RecommendReply implements Replier {
 
@@ -11,6 +13,8 @@ public class RecommendReply implements Replier {
     private RecipesRequester recipesRequester = new RecipesRequester();
     //todo DI
     private ReplyCallback callback;
+    //todo DI
+    private RecommendCache recommendCache = BeanCreator.recommendCache();
 
     public RecommendReply(ReplyCallback callback) {
         this.callback = callback;
@@ -31,8 +35,9 @@ public class RecommendReply implements Replier {
             e.printStackTrace();
         }
         if (recipe != null) {
-            reply = "What about \"" + recipe.title + "\"?\nTime for cooking: " + recipe.time + " min\nEnergy: " +
-                    recipe.energy + " Kcal\n" + recipe.imgUrl;
+            reply = recipeToString(recipe) +
+                    "\nIf you like your last recommended meal you can use \'/addtofav\' to save it to your favourite";
+            recommendCache.addRecommended(update.getMessage().getFrom().getId(), recipe);
         } else {
             reply = RETRY_MSG;
         }
@@ -41,5 +46,10 @@ public class RecommendReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         callback.sendReply(message);
+    }
+
+    static String recipeToString(Recipe recipe) {
+        return "What about \"" + recipe.title + "\"?\nTime for cooking: " + recipe.time + " min\nEnergy: " +
+                recipe.energy + " Kcal\n" + recipe.imgUrl;
     }
 }

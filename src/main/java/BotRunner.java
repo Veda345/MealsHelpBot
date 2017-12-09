@@ -1,14 +1,20 @@
 import db.DbBackend;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+import utils.RecommendCache;
 
 import java.io.*;
 
 public class BotRunner {
 
+    private final static Logger logger = LoggerFactory.getLogger(BotRunner.class);
+
+
     public static void main(String[] args) {
-//        initDb();
+        initDb();
         startBot();
     }
 
@@ -41,6 +47,7 @@ public class BotRunner {
     }
 
     private static void startBot() {
+        logger.info("Starting bot");
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {

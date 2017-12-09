@@ -1,8 +1,16 @@
 package db;
 
+import http.Recipe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DbBackend implements DbContract {
+
+    private final static Logger logger = LoggerFactory.getLogger(DbBackend.class);
 
     public static void createTables() {
         String query = "CREATE TABLE IF NOT EXISTS " + CALORIES +
@@ -20,6 +28,16 @@ public class DbBackend implements DbContract {
                 PfcTable.CARBS + "    INT     NOT NULL, " +
                 PfcTable.FAT + "      INT     NOT NULL)";
         execQuery(query);
+
+        query = "CREATE TABLE IF NOT EXISTS " + FAVRECIPE +
+                "(" + FavRecipeTable.ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                FavRecipeTable.PERSONID + " INT NOT NULL, " +
+                FavRecipeTable.RECIPEID + " TEXT, " +
+                FavRecipeTable.TITLE + "    TEXT, " +
+                FavRecipeTable.TIME + "     INTEGER, " +
+                FavRecipeTable.ENERGY + "   INTEGER, " +
+                FavRecipeTable.IMGURL + "   TEXT)";
+        execQuery(query);
     }
 
     private static void execQuery(String query) {
@@ -28,7 +46,7 @@ public class DbBackend implements DbContract {
             stmt.executeUpdate(query);
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error while executing query {}", query, e);
         }
     }
 
@@ -39,13 +57,14 @@ public class DbBackend implements DbContract {
             stmt.executeUpdate(query);
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error while dropping table {}", tableName, e);
         }
     }
 
     public static void dropTables() {
         dropTable(CALORIES);
         dropTable(PFC);
+        dropTable(FAVRECIPE);
     }
 
 
@@ -64,6 +83,20 @@ public class DbBackend implements DbContract {
         execQuery(query);
     }
 
+    public static void addFavourite(Integer personId, Recipe recipe) throws SQLException {
+        String query = "INSERT INTO " + FAVRECIPE + " (" + FavRecipeTable.PERSONID + ", " + FavRecipeTable.RECIPEID + ", "
+                + FavRecipeTable.TITLE + ", " + FavRecipeTable.TIME + ", " + FavRecipeTable.ENERGY + ", " + FavRecipeTable.IMGURL + ")"
+                + "VALUES (" + personId + ", \"" + recipe.id + "\", \"" + recipe.title + "\", " + recipe.time + ", " + recipe.energy + ", \""
+                + recipe.imgUrl + "\")";
+
+        try (Connection c = DriverManager.getConnection(DATABASE)) {
+            Statement stmt = c.createStatement();
+            stmt.executeUpdate(query);
+            stmt.close();
+        }
+    }
+
+
     public static ProductInfo getProductCalories(String productName) {
         String query = "SELECT * FROM " + CALORIES + " WHERE " + CaloriesTable.NAME + "= \"" + productName + "\"";
         try (Connection c = DriverManager.getConnection(DATABASE)) {
@@ -75,7 +108,7 @@ public class DbBackend implements DbContract {
             stmt.close();
             return new ProductInfo(productName, serving, cal);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error while getting product {} calories", productName, e);
         }
         return null;
     }
@@ -93,7 +126,29 @@ public class DbBackend implements DbContract {
             stmt.close();
             return new ProductInfo(productName, serving, protein, fat, carbs);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error while getting product {} pfc", productName, e);
+        }
+        return null;
+    }
+
+    public static List<Recipe> getFavRecipes(Integer personId) {
+        String query = "SELECT * FROM " + FAVRECIPE + " WHERE " + FavRecipeTable.PERSONID + "=" + personId;
+        try (Connection c = DriverManager.getConnection(DATABASE)) {
+            Statement stmt = c.createStatement();
+            ResultSet resultSet = stmt.executeQuery(query);
+
+            List<Recipe> recipes = new ArrayList<>();
+            while (resultSet.next()) {
+                String recipeId = resultSet.getString(FavRecipeTable.RECIPEID);
+                String title = resultSet.getString(FavRecipeTable.TITLE);
+                int time = resultSet.getInt(FavRecipeTable.TIME);
+                int energy = resultSet.getInt(FavRecipeTable.ENERGY);
+                String imgurl = resultSet.getString(FavRecipeTable.IMGURL);
+                recipes.add(new Recipe(recipeId, title, time, energy, imgurl));
+            }
+            return recipes;
+        } catch (SQLException e) {
+            logger.error("Error while getting person {} favourite recipes", personId, e);
         }
         return null;
     }
