@@ -11,6 +11,9 @@ import utils.RecommendCache;
 
 import java.sql.SQLException;
 
+/**
+ * Saves (last) user's recommendation that is contained in {@link RecommendCache}
+ */
 public class AddToFavReply implements Replier {
 
     private final static Logger logger = LoggerFactory.getLogger(AddToFavReply.class);
@@ -21,6 +24,9 @@ public class AddToFavReply implements Replier {
     //todo DI
     private ReplyCallback callback;
 
+    /**
+     * String meaning that user doesn't get any recommendation after reboot
+     */
     private static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
 
 

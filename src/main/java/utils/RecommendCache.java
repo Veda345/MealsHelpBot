@@ -7,6 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RecommendCache {
 
+    /**
+     * Cache that contains last recommended recipe to telegram user,
+     * doesn't survive reboot
+     */
     private final Map<Integer, Recipe> lastRecommended = new ConcurrentHashMap<>();
 
     public void addRecommended(Integer personId, Recipe recipe) {

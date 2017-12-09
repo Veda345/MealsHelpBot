@@ -7,6 +7,9 @@ import org.telegram.telegrambots.api.objects.Update;
 
 import java.util.List;
 
+/**
+ * Gets all saved user's recommendation
+ */
 public class FavReply implements Replier {
 
     //todo DI
