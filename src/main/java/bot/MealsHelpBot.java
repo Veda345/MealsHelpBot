@@ -48,7 +48,6 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
                 }
             } else {
                 currentReplier.reply(update);
-                System.out.println("Veda " + query);
             }
         }
     }

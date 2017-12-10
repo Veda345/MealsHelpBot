@@ -5,6 +5,7 @@ import http.RecipesRequester;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import utils.BeanCreator;
+import utils.FormattingUtils;
 import utils.RecommendCache;
 
 public class RecommendReply implements Replier {
@@ -36,17 +37,19 @@ public class RecommendReply implements Replier {
             e.printStackTrace();
         }
         if (recipe != null) {
-            reply = recipeToShortString(recipe) +
-                    "\nIf you like your last recommended meal you can use \'/addtofav\' to save it to your favourite";
+            reply = recipeToShortString(recipe);
             recommendCache.addRecommended(update.getMessage().getFrom().getId(), recipe);
         } else {
             reply = RETRY_MSG;
         }
         currentRecipe = recipe;
-
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
+        message.enableHtml(true);
+        callback.sendReply(message);
+
+        message.setText("If you like your last recommended meal you can use \'/addtofav\' to save it to your favourite");
         callback.sendReply(message);
     }
 
@@ -70,6 +73,7 @@ public class RecommendReply implements Replier {
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
                     .setText(currentState.getReply());
+            message.enableHtml(true);
             callback.sendReply(message);
 
         } else if (request.contains(REQUEST_NEXT)) {
@@ -79,16 +83,19 @@ public class RecommendReply implements Replier {
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
                     .setText(currentState.getReply());
+            message.enableHtml(true);
             callback.sendReply(message);
-
         } else {
             initCall(update);
         }
     }
 
     static String recipeToShortString(Recipe recipe) {
-        return "What about \"" + recipe.title + "\"?\nTime for cooking: " + recipe.time + " min\nEnergy: " +
-                recipe.energy + " Kcal\n" + recipe.imgUrl;
+
+        return "What about \"" + FormattingUtils.formatTitle(recipe.title) + "\"?\n" +
+                FormattingUtils.formatBoldText("Time for cooking: ") + recipe.time + " min\n" +
+                FormattingUtils.formatBoldText("Energy: ") + recipe.energy + " Kcal\n" +
+                recipe.imgUrl + "\n";
     }
 
     private abstract class State {
@@ -99,7 +106,9 @@ public class RecommendReply implements Replier {
 
         @Override
         String getReply() {
-            String result = currentRecipe.title + "\nЧтобы увидеть рецепт по шагам, введите \"next\"\n";
+            String result = FormattingUtils.formatTitle(currentRecipe.title) + "\n"+
+                    "Чтобы увидеть рецепт по шагам, введите "+
+                    FormattingUtils.formatBoldText("\"next\"\n");
             currentState = new StepState(0);
             return result;
         }
@@ -115,21 +124,19 @@ public class RecommendReply implements Replier {
         @Override
         String getReply() {
             if (stepNum >= currentRecipe.stages.size()) {
-                return "No more steps!";
+                return FormattingUtils.formatBoldText("No more steps!");
             }
 
             Recipe.Stage stage = currentRecipe.stages.get(stepNum);
             StringBuilder result = new StringBuilder();
             for (String str: stage.steps) {
-                result.append(str).append("\n");
+                result.append(FormattingUtils.formatPointedText(str));
             }
-            result.append(stage.imgUrl);
+            result.append(stage.imgUrl).append("\n");
 
             currentState = new StepState(stepNum + 1);
             return result.toString();
         }
-
-
     }
 
     private class ErrorState extends State {
@@ -138,7 +145,7 @@ public class RecommendReply implements Replier {
 
         @Override
         String getReply() {
-            return REPLY_ERROR;
+            return FormattingUtils.formatBoldText(REPLY_ERROR);
         }
     }
 }

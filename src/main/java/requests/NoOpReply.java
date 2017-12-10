@@ -18,7 +18,7 @@ public class NoOpReply implements Replier {
 
     @Override
     public void reply(Update update) {
-        answer(update, "Try another command2!");
+        answer(update, "Try another command!");
     }
 
     private void answer(Update update, String reply) {
