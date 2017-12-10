@@ -1,8 +1,6 @@
 package http;
 
 import com.sun.istack.internal.NotNull;
-import org.json.JSONException;
-import sun.jvm.hotspot.utilities.Assert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,19 +9,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RecipesRequester {
 
     private static final String BASE_URL = "https://intense-earth-33481.herokuapp.com/";
     private static final String RECOMMEND_URL = BASE_URL + "recommend/";
+    private static final String RECIPES_URL = BASE_URL + "recipes/";
 
     //todo add DI for JSONParser
     private JSONParser jsonParser = new JSONParser();
 
+    private Map<String, Recipe> allRecipes = new HashMap<>(30);
     private List<Recipe> cache = new ArrayList<>(3);
-
-    //todo find more information about recipe by id
 
     @NotNull
     private String requestUrl(@NotNull String inputUrl) throws IOException {
@@ -46,11 +46,23 @@ public class RecipesRequester {
     @NotNull
     public Recipe requestRecommendations() throws IOException, ParseException {
         if (cache.size() == 0) {
-            cache.addAll(jsonParser.parse(requestUrl(RECOMMEND_URL)));
+            cache.addAll(jsonParser.parseRecommendations(requestUrl(RECOMMEND_URL)));
         }
         if (cache.size() == 0) {
             return null;
         }
         return cache.remove(0);
     }
+
+    @NotNull
+    public Recipe requestFullRecipe(String recipeId) throws IOException, ParseException {
+        if (allRecipes.size() == 0) {
+            List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
+            for (Recipe recipe: recipes) {
+                allRecipes.put(recipe.id, recipe);
+            }
+        }
+        return allRecipes.get(recipeId);
+    }
+
 }

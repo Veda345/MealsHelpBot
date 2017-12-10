@@ -36,7 +36,7 @@ public class FavReply implements Replier {
                 reply.append("You have no favourite recipes");
             }
             else {
-                favRecipes.forEach(recipe -> reply.append(RecommendReply.recipeToString(recipe)).append("\n\n"));
+                favRecipes.forEach(recipe -> reply.append(RecommendReply.recipeToShortString(recipe)).append("\n\n"));
             }
         }
         answer(update, reply.toString());

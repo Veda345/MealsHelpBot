@@ -26,7 +26,6 @@ public class MealsReplyKeyboard {
         secondRow.add(MealsBotCommands.ADDTOFAV.getCommandName());
         secondRow.add(MealsBotCommands.CLEAR.getCommandName());
         secondRow.add(MealsBotCommands.HELP.getCommandName());
-        //todo back button
 
         rows.add(firstRow);
         rows.add(secondRow);
