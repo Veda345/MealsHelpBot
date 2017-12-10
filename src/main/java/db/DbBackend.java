@@ -83,6 +83,12 @@ public class DbBackend implements DbContract {
         execQuery(query);
     }
 
+    /**
+     * Saves recommended to telegram user recipe
+     * @param personId A unique id that identifies telegram user
+     * @param recipe recipe to save
+     * @throws SQLException throws if something went wrong while saving
+     */
     public static void addFavourite(Integer personId, Recipe recipe) throws SQLException {
         String query = "INSERT INTO " + FAVRECIPE + " (" + FavRecipeTable.PERSONID + ", " + FavRecipeTable.RECIPEID + ", "
                 + FavRecipeTable.TITLE + ", " + FavRecipeTable.TIME + ", " + FavRecipeTable.ENERGY + ", " + FavRecipeTable.IMGURL + ")"
@@ -131,6 +137,11 @@ public class DbBackend implements DbContract {
         return null;
     }
 
+    /**
+     * Gets all recipes that are saved by telegram user
+     * @param personId A unique id that identifies telegram user
+     * @return List of saved recommended recipes
+     */
     public static List<Recipe> getFavRecipes(Integer personId) {
         String query = "SELECT * FROM " + FAVRECIPE + " WHERE " + FavRecipeTable.PERSONID + "=" + personId;
         try (Connection c = DriverManager.getConnection(DATABASE)) {

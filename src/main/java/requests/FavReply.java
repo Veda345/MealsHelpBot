@@ -7,6 +7,9 @@ import org.telegram.telegrambots.api.objects.Update;
 
 import java.util.List;
 
+/**
+ * Gets all saved user's recommendation
+ */
 public class FavReply implements Replier {
 
     //todo DI
@@ -46,6 +49,7 @@ public class FavReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
+        message.enableHtml(true);
         callback.sendReply(message);
     }
 }
