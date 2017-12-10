@@ -1,5 +1,6 @@
 package requests;
 
+import db.DbBackend;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import utils.BeanCreator;
@@ -23,8 +24,13 @@ public class ClearReply implements Replier {
     @Override
     public void reply(Update update) {
         Integer personId = update.getMessage().getFrom().getId();
-        recommendCache.deleteRecommended(personId);
-        answer(update, "All favorites cleared!");
+        if (DbBackend.clearSavedRecipes(personId)) {
+            recommendCache.deleteRecommended(personId);
+            answer(update, "All favorites cleared!");
+        }
+        else {
+            answer(update, RETRY_MSG);
+        }
     }
 
     private void answer(Update update, String reply) {
