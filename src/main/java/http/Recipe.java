@@ -11,16 +11,12 @@ public class Recipe {
     public String id;
     @NotNull
     public String title;
-    public int time;
-    public int energy;
     @Nullable
     public String imgUrl;
     @Nullable
     public List<Stage> stages;
-
-    public Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl) {
-        this(id, title, time, energy, imgUrl, null);
-    }
+    public int time;
+    public int energy;
 
     public Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
         this.id = id;
@@ -41,5 +37,64 @@ public class Recipe {
             this.steps = steps;
             this.imgUrl = imgUrl;
         }
+    }
+
+    public static class Builder {
+
+        @Nullable
+        String id;
+        @Nullable
+        String title;
+        @Nullable
+        String imgUrl;
+        @Nullable
+        List<Stage> stages;
+        int time;
+        int energy;
+
+        @NotNull
+        public Builder id(@NotNull String id) {
+            this.id = id;
+            return this;
+        }
+
+        @NotNull
+        public Builder title(@NotNull String title) {
+            this.title = title;
+            return this;
+        }
+
+        @NotNull
+        public Builder imgUrl(@NotNull String imgUrl) {
+            this.imgUrl = imgUrl;
+            return this;
+        }
+
+
+        @NotNull
+        public Builder stages(@NotNull List<Stage> stages) {
+            this.stages = stages;
+            return this;
+        }
+
+
+        @NotNull
+        public Builder time(int time) {
+            this.time = time;
+            return this;
+        }
+
+
+        @NotNull
+        public Builder energy(int energy) {
+            this.energy = energy;
+            return this;
+        }
+
+        @NotNull
+        public Recipe build() {
+            return new Recipe(id, title, time, energy, imgUrl, stages);
+        }
+
     }
 }

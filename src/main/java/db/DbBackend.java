@@ -72,7 +72,7 @@ public class DbBackend implements DbContract {
 
     public static void addProductCaloriesInfo(@NotNull String name, @NotNull String serving, long cal) {
         String query = "INSERT INTO " + CALORIES + " (" + CaloriesTable.NAME + ", " + CaloriesTable.SERVING + ", " + CaloriesTable.CAL + ")"
-                + " VALUES (\"" + name + "\"," + "\"" + serving + "\","  + cal + ")";
+                + " VALUES (\"" + name + "\"," + "\"" + serving + "\"," + cal + ")";
 
         execQuery(query);
     }
@@ -80,15 +80,16 @@ public class DbBackend implements DbContract {
     public static void addProductPfcInfo(@NotNull String name, @NotNull String serving, long protein, long fat, long carbs) {
         String query = "INSERT INTO " + PFC + " (" + PfcTable.NAME + ", " + PfcTable.SERVING + ", " + PfcTable.PROTEIN
                 + ", " + PfcTable.FAT + ", " + PfcTable.CARBS + ")"
-                + " VALUES (\"" + name + "\"," + "\"" + serving + "\","  + protein  + ", " + fat + ", " + carbs + ")";
+                + " VALUES (\"" + name + "\"," + "\"" + serving + "\"," + protein + ", " + fat + ", " + carbs + ")";
 
         execQuery(query);
     }
 
     /**
      * Saves recommended to telegram user recipe
+     *
      * @param personId A unique id that identifies telegram user
-     * @param recipe recipe to save
+     * @param recipe   recipe to save
      * @throws SQLException throws if something went wrong while saving
      */
     public static void addFavourite(@NotNull Integer personId, @NotNull Recipe recipe) throws SQLException {
@@ -142,6 +143,7 @@ public class DbBackend implements DbContract {
 
     /**
      * Gets all recipes that are saved by telegram user
+     *
      * @param personId A unique id that identifies telegram user
      * @return List of saved recommended recipes
      */
@@ -159,7 +161,13 @@ public class DbBackend implements DbContract {
                 int time = resultSet.getInt(FavRecipeTable.TIME);
                 int energy = resultSet.getInt(FavRecipeTable.ENERGY);
                 String imgurl = resultSet.getString(FavRecipeTable.IMGURL);
-                recipes.add(new Recipe(recipeId, title, time, energy, imgurl));
+                recipes.add(new Recipe.Builder()
+                        .id(recipeId)
+                        .title(title)
+                        .time(time)
+                        .energy(energy)
+                        .imgUrl(imgurl)
+                        .build());
             }
             return recipes;
         } catch (SQLException e) {
