@@ -6,13 +6,16 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import requests.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallback {
 
+    @NotNull
     private static final String API_TOKEN = "424486608:AAHfZOwoCJt4Iok87Xn7Q-MVGq3_AClwaFE";
 
+    @NotNull
     private static Map<MealsBotCommands, Replier> command2Replier = new HashMap<>();
 
     {
@@ -26,12 +29,13 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
         command2Replier.put(MealsBotCommands.CLEAR, new ClearReply(this));
     }
 
+    @NotNull
     private Replier currentReplier = command2Replier.get(MealsBotCommands.NONE);
-
+    @NotNull
     private MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
 
     @Override
-    public void onUpdateReceived(Update update) {
+    public void onUpdateReceived(@NotNull Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String query = update.getMessage().getText();
             if (query == null) {
@@ -52,7 +56,7 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
         }
     }
 
-    private MealsBotCommands getNewCommand(String query) {
+    private MealsBotCommands getNewCommand(@NotNull String query) {
         try {
             return MealsBotCommands.getCommandByName(query);
         } catch (IllegalArgumentException e) {
@@ -61,18 +65,21 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
         return null;
     }
 
+    @NotNull
     @Override
     public String getBotUsername() {
         return "MealsHelpBot";
     }
 
+    @NotNull
     @Override
     public String getBotToken() {
         return API_TOKEN;
     }
 
+    @NotNull
     @Override
-    public void sendReply(SendMessage message) {
+    public void sendReply(@NotNull SendMessage message) {
         try {
             message.setReplyMarkup(replyKeyboard.getKeyboardMarkup());
             sendMessage(message);

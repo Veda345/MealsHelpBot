@@ -1,29 +1,28 @@
 package http;
 
+import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
 import java.util.List;
 
 public class Recipe {
 
-    @Nullable
+    @NotNull
     public String id;
-    @Nullable
+    @NotNull
     public String title;
-    @Nullable
     public int time;
-    @Nullable
     public int energy;
     @Nullable
     public String imgUrl;
     @Nullable
     public List<Stage> stages;
 
-    public Recipe(String id, String title, int time, int energy, String imgUrl) {
+    public Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl) {
         this(id, title, time, energy, imgUrl, null);
     }
 
-    public Recipe(String id, String title, int time, int energy, String imgUrl, List<Stage> stages) {
+    public Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
         this.id = id;
         this.title = title;
         this.time = time;
@@ -33,10 +32,12 @@ public class Recipe {
     }
 
     public static class Stage {
+        @NotNull
         public List<String> steps;
+        @NotNull
         public String imgUrl;
 
-        Stage(List<String> steps, String imgUrl) {
+        Stage(@NotNull List<String> steps, @Nullable String imgUrl) {
             this.steps = steps;
             this.imgUrl = imgUrl;
         }

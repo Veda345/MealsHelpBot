@@ -3,25 +3,27 @@ package requests;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
+import javax.validation.constraints.NotNull;
+
 public class NoOpReply implements Replier {
-    //todo DI
+    @NotNull
     private ReplyCallback callback;
 
-    public NoOpReply(ReplyCallback callback) {
+    public NoOpReply(@NotNull ReplyCallback callback) {
         this.callback = callback;
     }
 
     @Override
-    public void initCall(Update update) {
+    public void initCall(@NotNull Update update) {
         reply(update);
     }
 
     @Override
-    public void reply(Update update) {
+    public void reply(@NotNull Update update) {
         answer(update, "Try another command!");
     }
 
-    private void answer(Update update, String reply) {
+    private void answer(@NotNull Update update, String reply) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);

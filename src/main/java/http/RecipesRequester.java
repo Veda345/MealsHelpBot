@@ -19,10 +19,11 @@ public class RecipesRequester {
     private static final String RECOMMEND_URL = BASE_URL + "recommend/";
     private static final String RECIPES_URL = BASE_URL + "recipes/";
 
-    //todo add DI for JSONParser
+    @NotNull
     private JSONParser jsonParser = new JSONParser();
-
+    @NotNull
     private Map<String, Recipe> allRecipes = new HashMap<>(30);
+    @NotNull
     private List<Recipe> cache = new ArrayList<>(3);
 
     @NotNull

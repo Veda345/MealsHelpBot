@@ -1,5 +1,6 @@
 package requests;
 
+import com.sun.istack.internal.NotNull;
 import db.DbBackend;
 import http.Recipe;
 import org.slf4j.Logger;
@@ -16,32 +17,32 @@ import java.sql.SQLException;
  */
 public class AddToFavReply implements Replier {
 
+    @NotNull
     private final static Logger logger = LoggerFactory.getLogger(AddToFavReply.class);
-
-    //todo DI
+    @NotNull
     private RecommendCache recommendCache = BeanCreator.recommendCache();
-
-    //todo DI
+    @NotNull
     private ReplyCallback callback;
 
     /**
      * String meaning that user doesn't get any recommendation after reboot
      */
+    @NotNull
     private static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
 
 
-    public AddToFavReply(ReplyCallback callback) {
+    public AddToFavReply(@NotNull ReplyCallback callback) {
         this.callback = callback;
     }
 
 
     @Override
-    public void initCall(Update update) {
+    public void initCall(@NotNull Update update) {
         reply(update);
     }
 
     @Override
-    public void reply(Update update) {
+    public void reply(@NotNull Update update) {
         Integer personId = update.getMessage().getFrom().getId();
 
         Recipe recommended = recommendCache.getRecommended(personId);
@@ -63,7 +64,7 @@ public class AddToFavReply implements Replier {
         answer(update, reply);
     }
 
-    private void answer(Update update, String reply) {
+    private void answer(@NotNull Update update, @NotNull String reply) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);

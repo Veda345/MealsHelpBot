@@ -33,6 +33,7 @@ public class MealsReplyKeyboard {
         keyboardMarkup.setResizeKeyboard(true);
     }
 
+    @NotNull
     public ReplyKeyboardMarkup getKeyboardMarkup() {
         return keyboardMarkup;
     }

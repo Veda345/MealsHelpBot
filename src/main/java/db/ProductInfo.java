@@ -1,8 +1,12 @@
 package db;
 
+import javax.validation.constraints.NotNull;
+
 public class ProductInfo {
 
+    @NotNull
     public String name;
+    @NotNull
     public String serving;
     public long calories;
     public long fat, carbs, protein;

@@ -1,5 +1,6 @@
 package requests;
 
+import com.sun.istack.internal.NotNull;
 import db.DbBackend;
 import db.ProductInfo;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -7,20 +8,20 @@ import org.telegram.telegrambots.api.objects.Update;
 
 public class CalReply implements Replier {
 
-    //todo DI
+    @NotNull
     private ReplyCallback callback;
 
-    public CalReply(ReplyCallback callback) {
+    public CalReply(@NotNull ReplyCallback callback) {
         this.callback = callback;
     }
 
     @Override
-    public void initCall(Update update) {
+    public void initCall(@NotNull Update update) {
         answer(update, "The caloric value of which product do you want to know?");
     }
 
     @Override
-    public void reply(Update update) {
+    public void reply(@NotNull Update update) {
         String reply;
 
         ProductInfo info = DbBackend.getProductCalories(update.getMessage().getText());
@@ -33,7 +34,7 @@ public class CalReply implements Replier {
         answer(update, reply);
     }
 
-    private void answer(Update update, String reply) {
+    private void answer(@NotNull Update update, @NotNull String reply) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);

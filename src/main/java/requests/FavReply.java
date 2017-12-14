@@ -5,6 +5,7 @@ import http.Recipe;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -12,21 +13,20 @@ import java.util.List;
  */
 public class FavReply implements Replier {
 
-    //todo DI
+    @NotNull
     private ReplyCallback callback;
 
-
-    public FavReply(ReplyCallback callback) {
+    public FavReply(@NotNull ReplyCallback callback) {
         this.callback = callback;
     }
 
     @Override
-    public void initCall(Update update) {
+    public void initCall(@NotNull Update update) {
         reply(update);
     }
 
     @Override
-    public void reply(Update update) {
+    public void reply(@NotNull Update update) {
         Integer personId = update.getMessage().getFrom().getId();
         List<Recipe> favRecipes = DbBackend.getFavRecipes(personId);
 
@@ -45,7 +45,7 @@ public class FavReply implements Replier {
         answer(update, reply.toString());
     }
 
-    private void answer(Update update, String reply) {
+    private void answer(@NotNull Update update, @NotNull String reply) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);

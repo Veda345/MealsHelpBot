@@ -4,12 +4,14 @@ import http.Recipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DbBackend implements DbContract {
 
+    @NotNull
     private final static Logger logger = LoggerFactory.getLogger(DbBackend.class);
 
     public static void createTables() {
@@ -40,7 +42,7 @@ public class DbBackend implements DbContract {
         execQuery(query);
     }
 
-    private static void execQuery(String query) {
+    private static void execQuery(@NotNull String query) {
         try (Connection c = DriverManager.getConnection(DATABASE)) {
             Statement stmt = c.createStatement();
             stmt.executeUpdate(query);
@@ -50,7 +52,7 @@ public class DbBackend implements DbContract {
         }
     }
 
-    public static void dropTable(String tableName) {
+    public static void dropTable(@NotNull String tableName) {
         try (Connection c = DriverManager.getConnection(DATABASE)) {
             String query = "DROP TABLE IF EXISTS " + tableName;
             Statement stmt = c.createStatement();
@@ -68,14 +70,14 @@ public class DbBackend implements DbContract {
     }
 
 
-    public static void addProductCaloriesInfo(String name, String serving, long cal) {
+    public static void addProductCaloriesInfo(@NotNull String name, @NotNull String serving, long cal) {
         String query = "INSERT INTO " + CALORIES + " (" + CaloriesTable.NAME + ", " + CaloriesTable.SERVING + ", " + CaloriesTable.CAL + ")"
                 + " VALUES (\"" + name + "\"," + "\"" + serving + "\","  + cal + ")";
 
         execQuery(query);
     }
 
-    public static void addProductPfcInfo(String name, String serving, long protein, long fat, long carbs) {
+    public static void addProductPfcInfo(@NotNull String name, @NotNull String serving, long protein, long fat, long carbs) {
         String query = "INSERT INTO " + PFC + " (" + PfcTable.NAME + ", " + PfcTable.SERVING + ", " + PfcTable.PROTEIN
                 + ", " + PfcTable.FAT + ", " + PfcTable.CARBS + ")"
                 + " VALUES (\"" + name + "\"," + "\"" + serving + "\","  + protein  + ", " + fat + ", " + carbs + ")";
@@ -89,7 +91,7 @@ public class DbBackend implements DbContract {
      * @param recipe recipe to save
      * @throws SQLException throws if something went wrong while saving
      */
-    public static void addFavourite(Integer personId, Recipe recipe) throws SQLException {
+    public static void addFavourite(@NotNull Integer personId, @NotNull Recipe recipe) throws SQLException {
         String query = "INSERT INTO " + FAVRECIPE + " (" + FavRecipeTable.PERSONID + ", " + FavRecipeTable.RECIPEID + ", "
                 + FavRecipeTable.TITLE + ", " + FavRecipeTable.TIME + ", " + FavRecipeTable.ENERGY + ", " + FavRecipeTable.IMGURL + ")"
                 + "VALUES (" + personId + ", \"" + recipe.id + "\", \"" + recipe.title + "\", " + recipe.time + ", " + recipe.energy + ", \""
@@ -102,8 +104,8 @@ public class DbBackend implements DbContract {
         }
     }
 
-
-    public static ProductInfo getProductCalories(String productName) {
+    @NotNull
+    public static ProductInfo getProductCalories(@NotNull String productName) {
         String query = "SELECT * FROM " + CALORIES + " WHERE " + CaloriesTable.NAME + "= \"" + productName + "\"";
         try (Connection c = DriverManager.getConnection(DATABASE)) {
             Statement stmt = c.createStatement();
@@ -119,7 +121,8 @@ public class DbBackend implements DbContract {
         return null;
     }
 
-    public static ProductInfo getProductPfc(String productName) {
+    @NotNull
+    public static ProductInfo getProductPfc(@NotNull String productName) {
         String query = "SELECT * FROM " + PFC + " WHERE " + PfcTable.NAME + "= \"" + productName + "\"";
         try (Connection c = DriverManager.getConnection(DATABASE)) {
             Statement stmt = c.createStatement();
@@ -142,7 +145,8 @@ public class DbBackend implements DbContract {
      * @param personId A unique id that identifies telegram user
      * @return List of saved recommended recipes
      */
-    public static List<Recipe> getFavRecipes(Integer personId) {
+    @NotNull
+    public static List<Recipe> getFavRecipes(@NotNull Integer personId) {
         String query = "SELECT * FROM " + FAVRECIPE + " WHERE " + FavRecipeTable.PERSONID + "=" + personId;
         try (Connection c = DriverManager.getConnection(DATABASE)) {
             Statement stmt = c.createStatement();

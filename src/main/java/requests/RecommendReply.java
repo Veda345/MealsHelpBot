@@ -1,5 +1,6 @@
 package requests;
 
+import com.sun.istack.internal.Nullable;
 import http.Recipe;
 import http.RecipesRequester;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -8,27 +9,30 @@ import utils.BeanCreator;
 import utils.FormattingUtils;
 import utils.RecommendCache;
 
+import javax.validation.constraints.NotNull;
+
 public class RecommendReply implements Replier {
 
     private static final String REQUEST_MORE = "more";
     private static final String REQUEST_NEXT = "next";
 
-    //todo DI
+    @NotNull
     private RecipesRequester recipesRequester = new RecipesRequester();
-    //todo DI
+    @NotNull
     private ReplyCallback callback;
-    //todo DI
+    @NotNull
     private RecommendCache recommendCache = BeanCreator.recommendCache();
-
+    @Nullable
     private Recipe currentRecipe = null;
+    @Nullable
     private State currentState = null;
 
-    public RecommendReply(ReplyCallback callback) {
+    public RecommendReply(@NotNull ReplyCallback callback) {
         this.callback = callback;
     }
 
     @Override
-    public void initCall(Update update) {
+    public void initCall(@NotNull Update update) {
         String reply;
         Recipe recipe = null;
         try {
@@ -54,7 +58,7 @@ public class RecommendReply implements Replier {
     }
 
     @Override
-    public void reply(Update update) {
+    public void reply(@NotNull Update update) {
         String request = update.getMessage().getText();
 
         if (request.contains(REQUEST_MORE)) {
@@ -90,7 +94,7 @@ public class RecommendReply implements Replier {
         }
     }
 
-    static String recipeToShortString(Recipe recipe) {
+    static String recipeToShortString(@NotNull Recipe recipe) {
 
         return "What about \"" + FormattingUtils.formatTitle(recipe.title) + "\"?\n" +
                 FormattingUtils.formatBoldText("Time for cooking: ") + recipe.time + " min\n" +
@@ -99,11 +103,13 @@ public class RecommendReply implements Replier {
     }
 
     private abstract class State {
+        @NotNull
         abstract String getReply();
     }
 
     private class InitState extends State {
 
+        @NotNull
         @Override
         String getReply() {
             String result = FormattingUtils.formatTitle(currentRecipe.title) + "\n"+
@@ -121,6 +127,7 @@ public class RecommendReply implements Replier {
             stepNum = num;
         }
 
+        @NotNull
         @Override
         String getReply() {
             if (stepNum >= currentRecipe.stages.size()) {
@@ -141,8 +148,10 @@ public class RecommendReply implements Replier {
 
     private class ErrorState extends State {
 
+        @NotNull
         private static final String REPLY_ERROR = "Internal error occurred! Try another command...";
 
+        @NotNull
         @Override
         String getReply() {
             return FormattingUtils.formatBoldText(REPLY_ERROR);

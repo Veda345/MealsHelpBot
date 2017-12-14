@@ -7,10 +7,12 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import javax.validation.constraints.NotNull;
 import java.io.*;
 
 public class BotRunner {
 
+    @NotNull
     private final static Logger logger = LoggerFactory.getLogger(BotRunner.class);
 
 
@@ -35,7 +37,6 @@ public class BotRunner {
                 String[] parts = line.split("\t");
                 String name = parts[0].split(",")[0];
 
-//                System.out.println(name + " " + parts[1] + " " + Long.parseLong(parts[3]));
                 DbBackend.addProductCaloriesInfo(name, parts[1], Long.parseLong(parts[3]));
 
                 DbBackend.addProductPfcInfo(name, parts[1], Long.parseLong(parts[6]),  Long.parseLong(parts[4]),  Long.parseLong(parts[5]));

@@ -1,5 +1,6 @@
 package requests;
 
+import com.sun.istack.internal.NotNull;
 import db.DbBackend;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
@@ -8,21 +9,22 @@ import utils.RecommendCache;
 
 public class ClearReply implements Replier {
 
-    //todo DI
+    @NotNull
     private ReplyCallback callback;
+    @NotNull
     private RecommendCache recommendCache = BeanCreator.recommendCache();
 
-    public ClearReply(ReplyCallback callback) {
+    public ClearReply(@NotNull ReplyCallback callback) {
         this.callback = callback;
     }
 
     @Override
-    public void initCall(Update update) {
+    public void initCall(@NotNull Update update) {
         reply(update);
     }
 
     @Override
-    public void reply(Update update) {
+    public void reply(@NotNull Update update) {
         Integer personId = update.getMessage().getFrom().getId();
         if (DbBackend.clearSavedRecipes(personId)) {
             recommendCache.deleteRecommended(personId);
@@ -33,7 +35,7 @@ public class ClearReply implements Replier {
         }
     }
 
-    private void answer(Update update, String reply) {
+    private void answer(@NotNull Update update, @NotNull String reply) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);

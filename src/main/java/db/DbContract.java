@@ -1,10 +1,15 @@
 package db;
 
+import javax.validation.constraints.NotNull;
+
 interface DbContract {
 
+    @NotNull
     String DATABASE = "jdbc:sqlite:food.db";
 
+    @NotNull
     String CALORIES = "CALORIES";
+
     interface CaloriesTable {
         String ID = "id";
         String NAME = "name";

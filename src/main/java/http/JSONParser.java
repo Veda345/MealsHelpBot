@@ -5,9 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 class JSONParser {
@@ -60,7 +58,8 @@ class JSONParser {
         return recipes;
     }
 
-    private Recipe getBasicRecipe(JSONObject jsonObject) {
+    @NotNull
+    private Recipe getBasicRecipe(@NotNull JSONObject jsonObject) {
         String id = jsonObject.getString("_id");
         String title = jsonObject.getString("title");
         int time = jsonObject.getInt("time");

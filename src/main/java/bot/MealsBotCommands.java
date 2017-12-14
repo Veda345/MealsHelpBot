@@ -1,5 +1,7 @@
 package bot;
 
+import javax.validation.constraints.NotNull;
+
 public enum MealsBotCommands {
     CAL("/cal"),
     PFC("/pfc"),
@@ -10,9 +12,10 @@ public enum MealsBotCommands {
     CLEAR("/clear"),
     NONE("none");
 
+    @NotNull
     public final String name;
 
-    MealsBotCommands(String name) {
+    MealsBotCommands(@NotNull String name) {
         this.name = name;
     }
 
@@ -20,7 +23,7 @@ public enum MealsBotCommands {
         return name;
     }
 
-    public static MealsBotCommands getCommandByName(String name) {
+    public static MealsBotCommands getCommandByName(@NotNull String name) {
         if (name != null) {
             for (MealsBotCommands command : values()) {
                 if (command.name.equals(name)) {
