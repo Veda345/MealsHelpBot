@@ -1,6 +1,7 @@
 package http;
 
 import com.sun.istack.internal.NotNull;
+import data.Recipe;
 
 import java.io.BufferedReader;
 import java.io.IOException;

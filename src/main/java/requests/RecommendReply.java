@@ -1,17 +1,24 @@
 package requests;
 
 import com.sun.istack.internal.Nullable;
-import http.Recipe;
+import data.Recipe;
 import http.RecipesRequester;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import utils.BeanCreator;
+import utils.SingletonsCreator;
 import utils.FormattingUtils;
-import utils.RecommendCache;
+import data.RecommendCache;
 
 import javax.validation.constraints.NotNull;
 
+import java.io.IOException;
+import java.text.ParseException;
+
 public class RecommendReply implements Replier {
+
+    private final static Logger logger = LoggerFactory.getLogger(RecommendReply.class);
 
     private static final String REQUEST_MORE = "more";
     private static final String REQUEST_NEXT = "next";
@@ -21,7 +28,7 @@ public class RecommendReply implements Replier {
     @NotNull
     private ReplyCallback callback;
     @NotNull
-    private RecommendCache recommendCache = BeanCreator.recommendCache();
+    private RecommendCache recommendCache = SingletonsCreator.recommendCache();
     @Nullable
     private Recipe currentRecipe = null;
     @Nullable
@@ -42,7 +49,11 @@ public class RecommendReply implements Replier {
         }
         if (recipe != null) {
             reply = recipeToShortString(recipe);
-            recommendCache.addRecommended(update.getMessage().getFrom().getId(), recipe);
+            try {
+                recommendCache.addRecommended(update.getMessage().getFrom().getId(), recipesRequester.requestFullRecipe(recipe.id));
+            } catch (IOException | ParseException e) {
+                logger.error("Error while requesting and parsing full recipe", e);
+            }
         } else {
             reply = RETRY_MSG;
         }
@@ -53,7 +64,8 @@ public class RecommendReply implements Replier {
         message.enableHtml(true);
         callback.sendReply(message);
 
-        message.setText("If you like your last recommended meal you can use \'/addtofav\' to save it to your favourite");
+        message.setText("If you like your last recommended meal you can use \'/addtofav\' to save it to your favourite," +
+                " or type \"more\" for getting cooking steps");
         callback.sendReply(message);
     }
 
@@ -67,11 +79,12 @@ public class RecommendReply implements Replier {
                     currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
                     currentState = new InitState();
                 } catch (Exception e) {
-                    currentState = new  ErrorState();
-                    e.printStackTrace();
+                    currentState = new ErrorState();
+                    logger.error("Error while requesting and parsing recipe", e);
                 }
             } else {
-                currentState = new  ErrorState();
+                currentState = new ErrorState();
+                logger.warn("Unexpectedly currentRecipe is null");
             }
 
             SendMessage message = new SendMessage()
@@ -82,11 +95,12 @@ public class RecommendReply implements Replier {
 
         } else if (request.contains(REQUEST_NEXT)) {
             if (currentRecipe == null) {
-                currentState = new  ErrorState();
+                currentState = new ErrorState();
             }
+            String reply = currentState.getReply();
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText(currentState.getReply());
+                    .setText(reply.equals("\n") || reply.equals("") ? "Try typing \"next\" again" : reply);
             message.enableHtml(true);
             callback.sendReply(message);
         } else {

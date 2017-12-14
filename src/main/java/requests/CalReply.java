@@ -2,7 +2,7 @@ package requests;
 
 import com.sun.istack.internal.NotNull;
 import db.DbBackend;
-import db.ProductInfo;
+import data.ProductInfo;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
