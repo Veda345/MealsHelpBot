@@ -1,7 +1,9 @@
 package requests;
 
-import db.DbBackend;
+import bot.MealsBotCommands;
+import bot.ReplyCallback;
 import data.ProductInfo;
+import db.DbAccessor;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
@@ -9,12 +11,7 @@ import javax.validation.constraints.NotNull;
 
 public class PfcReply implements Replier {
 
-    @NotNull
-    private ReplyCallback callback;
-
-    public PfcReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
+    private final MealsBotCommands replierType = MealsBotCommands.PFC;
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -25,7 +22,7 @@ public class PfcReply implements Replier {
     public void reply(@NotNull Update update) {
         String reply;
 
-        ProductInfo info = DbBackend.getProductPfc(update.getMessage().getText());
+        ProductInfo info = DbAccessor.getProductPfc(update.getMessage().getText());
         if (info != null) {
             reply = "Protein " + info.protein + "g | Fat " + info.fat + "g | Carbs " + info.carbs + "g | per serving (" + info.serving + ")";
         } else {
@@ -39,6 +36,11 @@ public class PfcReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        callback.sendReply(message);
+        ReplyCallback.sendReply(message);
+    }
+
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
     }
 }

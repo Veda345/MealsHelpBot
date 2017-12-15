@@ -1,6 +1,8 @@
 package requests;
 
-import db.DbBackend;
+import bot.MealsBotCommands;
+import bot.ReplyCallback;
+import db.DbAccessor;
 import data.Recipe;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
@@ -13,12 +15,7 @@ import java.util.List;
  */
 public class FavReply implements Replier {
 
-    @NotNull
-    private ReplyCallback callback;
-
-    public FavReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
+    private final MealsBotCommands replierType = MealsBotCommands.FAV;
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -28,7 +25,7 @@ public class FavReply implements Replier {
     @Override
     public void reply(@NotNull Update update) {
         Integer personId = update.getMessage().getFrom().getId();
-        List<Recipe> favRecipes = DbBackend.getFavRecipes(personId);
+        List<Recipe> favRecipes = DbAccessor.getFavRecipes(personId);
 
         StringBuilder reply = new StringBuilder();
         if (favRecipes == null) {
@@ -50,6 +47,11 @@ public class FavReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        callback.sendReply(message);
+        ReplyCallback.sendReply(message);
+    }
+
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
     }
 }

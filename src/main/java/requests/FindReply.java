@@ -1,5 +1,7 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.ReplyCallback;
 import com.google.common.collect.Multimap;
 import data.Recipe;
 import http.RecipesRequester;
@@ -18,21 +20,21 @@ import java.util.Collection;
 import static requests.RecommendReply.recipeToShortString;
 
 public class FindReply implements Replier  {
+
     private final static Logger logger = LoggerFactory.getLogger(RecommendReply.class);
+
+    private final MealsBotCommands replierType = MealsBotCommands.FIND;
 
     @NotNull
     private RecipesRequester recipesRequester = new RecipesRequester();
 
-    @NotNull
-    private ReplyCallback callback;
-
     private ArrayList<Recipe> allRequestedRecipes;
+
     private String lastRequest = "";
+
     private Multimap<String, String> allTitleRecipes = null;
+
     private Recipe currentRecipe =  null;
-    public FindReply(@com.sun.istack.internal.NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -51,77 +53,82 @@ public class FindReply implements Replier  {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        callback.sendReply(message);
+        ReplyCallback.sendReply(message);
     }
 
     @Override
     public void reply(@NotNull Update update) {
         String reply = "";
         String request = update.getMessage().getText();
-        if (lastRequest.equals("")) {
-            lastRequest = "find";
-            try {
-                allRequestedRecipes = getRequestRecipes(allTitleRecipes, request.toLowerCase());
-            } catch (IOException | ParseException e) {
-                e.printStackTrace();
-            }
-            if (allRequestedRecipes != null) {
-                reply = printShortRecipes(allRequestedRecipes);
-            } else {
-                reply = RETRY_FIND;
-            }
-        } else if (lastRequest.equals("find")) {
-            lastRequest = "";
-            try {
-                int num = Integer.parseInt(request) - 1;
-                if (num >= 0 && num <= allRequestedRecipes.size()) {
-                    try {
-                        currentRecipe = allRequestedRecipes.get(num);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (currentRecipe != null) {
-                        lastRequest = "short";
-                        reply = recipeToShortString(currentRecipe);
-                    } else {
-                        reply = RETRY_MSG;
-                    }
+        switch (lastRequest) {
+            case "":
+                lastRequest = "find";
+                try {
+                    allRequestedRecipes = getRequestRecipes(allTitleRecipes, request.toLowerCase());
+                } catch (IOException | ParseException e) {
+                    logger.error("Error while getting requst ");
                 }
-            } catch (NumberFormatException nx) {
-                reply = RETRY_MSG;
-            }
-
-        } else if (lastRequest.equals("short")) {
-            lastRequest = "";
-            if (request.equals("more")) {
-                lastRequest = "more";
-                if (currentRecipe != null) {
-                    try {
-                        currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
-                        reply = FormattingUtils.formatTitle(currentRecipe.title) + "\n" +
-                                "If you want to se whole recipe, please, insert" +
-                                FormattingUtils.formatBoldText("\"next\"\n");
-                    } catch (Exception e) {
-                        logger.error("Error while requesting and parsing recipe at find", e);
-                    }
+                if (allRequestedRecipes != null) {
+                    reply = printShortRecipes(allRequestedRecipes);
                 } else {
-                    logger.warn("Unexpectedly currentRecipe is null at find");
+                    reply = RETRY_FIND;
                 }
-            }
-        } else if (lastRequest.equals("more") ) {
-            lastRequest = "done";
-            if (currentRecipe == null) {
-                reply = "Sorry, something goes wrong";
-            }
-
-            StringBuilder recipeText = new StringBuilder();
-            for (Recipe.Stage stage:currentRecipe.stages) {
-                for (String step : stage.steps) {
-                    recipeText.append(FormattingUtils.formatPointedText(step));
+                break;
+            case "find":
+                lastRequest = "";
+                try {
+                    int num = Integer.parseInt(request) - 1;
+                    if (num >= 0 && num <= allRequestedRecipes.size()) {
+                        try {
+                            currentRecipe = allRequestedRecipes.get(num);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (currentRecipe != null) {
+                            lastRequest = "short";
+                            reply = recipeToShortString(currentRecipe);
+                        } else {
+                            reply = RETRY_MSG;
+                        }
+                    }
+                } catch (NumberFormatException nx) {
+                    reply = RETRY_MSG;
                 }
-
-            }
-            reply = recipeText.toString();
+                break;
+            case "short":
+                lastRequest = "";
+                if (request.equals("more")) {
+                    lastRequest = "more";
+                    if (currentRecipe != null) {
+                        try {
+                            currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
+                            reply = FormattingUtils.formatTitle(currentRecipe.title) + "\n" +
+                                    "If you want to se whole recipe, please, insert" +
+                                    FormattingUtils.formatBoldText("\"next\"\n");
+                        } catch (Exception e) {
+                            logger.error("Error while requesting and parsing recipe at find", e);
+                            reply = Replier.RETRY_MSG;
+                        }
+                    }
+                    else {
+                        logger.warn("Unexpectedly currentRecipe is null at find");
+                        reply = Replier.RETRY_MSG;
+                    }
+                }
+                break;
+            case "more":
+                lastRequest = "done";
+                if (currentRecipe == null) {
+                    reply = "Sorry, something went wrong";
+                }
+                else {
+                    StringBuilder recipeText = new StringBuilder();
+                    for (Recipe.Stage stage : currentRecipe.stages) {
+                        stage.steps.forEach(step -> recipeText.append(FormattingUtils.formatPointedText(step)));
+                    }
+                    reply = recipeText.toString();
+                }
+                break;
         }
         answer(update, reply);
     }
@@ -134,8 +141,10 @@ public class FindReply implements Replier  {
             answer.append("recipe:\n");
         }
         int num = 1;
+
         for (Recipe recipe: allRequestedRecipes) {
-            answer.append(num + ") " + recipe.title + "\n");
+            answer.append(num).append(") ").append(recipe.title).append("\n");
+            num++;
         }
         answer.append("Print number of recipe you want to see " +
                 "or 0 if you want to try something else");
@@ -148,10 +157,14 @@ public class FindReply implements Replier  {
         ArrayList<Recipe> allRequestedRecipes = new ArrayList<>();
 
         Collection<String> recipesId = allTitleRecipes.get(requestRecipe);
-        for (String id:recipesId) {
-                allRequestedRecipes.add(recipesRequester.requestFullRecipe(id));
+        for (String id : recipesId) {
+            allRequestedRecipes.add(recipesRequester.requestFullRecipe(id));
         }
         return allRequestedRecipes;
     }
 
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
+    }
 }

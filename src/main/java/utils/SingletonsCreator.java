@@ -2,23 +2,43 @@ package utils;
 
 import bot.MealsHelpBot;
 import data.RecommendCache;
+import requests.*;
 
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SingletonsCreator {
 
-    @NotNull
     private static RecommendCache recommendCache = new RecommendCache();
 
-    @NotNull
     private static MealsHelpBot mealsHelpBot = new MealsHelpBot();
 
-    @NotNull
+    private static List<Replier> repliers;
+
     public static RecommendCache recommendCache() {
         return recommendCache;
     }
 
     public static MealsHelpBot mealsHelpBot() {
         return mealsHelpBot;
+    }
+
+    public static List<Replier> getRepliers() {
+        if (repliers == null) {
+            repliers = new ArrayList<>();
+            repliers.add(new CalReply());
+            repliers.add(new PfcReply());
+            repliers.add(new RecommendReply());
+            repliers.add(new NoOpReply());
+            repliers.add(new HelpReply());
+            repliers.add(new AddToFavReply());
+            repliers.add(new FavReply());
+            repliers.add(new ClearReply());
+            repliers.add(new FindReply());
+            return repliers;
+        }
+        else {
+            return repliers;
+        }
     }
 }

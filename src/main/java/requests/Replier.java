@@ -1,5 +1,6 @@
 package requests;
 
+import bot.MealsBotCommands;
 import org.telegram.telegrambots.api.objects.Update;
 
 import javax.validation.constraints.NotNull;
@@ -13,4 +14,6 @@ public interface Replier {
     void initCall(@NotNull Update update);
 
     void reply(@NotNull Update update);
+
+    MealsBotCommands getReplierType();
 }

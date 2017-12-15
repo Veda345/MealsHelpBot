@@ -1,17 +1,14 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.ReplyCallback;
 import com.sun.istack.internal.NotNull;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
 public class HelpReply implements Replier {
 
-    @NotNull
-    private ReplyCallback callback;
-
-    public HelpReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
+    private final MealsBotCommands replierType = MealsBotCommands.HELP;
 
 
     @Override
@@ -32,6 +29,11 @@ public class HelpReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        callback.sendReply(message);
+        ReplyCallback.sendReply(message);
+    }
+
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
     }
 }

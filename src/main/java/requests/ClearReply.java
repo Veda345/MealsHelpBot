@@ -1,22 +1,20 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.ReplyCallback;
 import com.sun.istack.internal.NotNull;
-import db.DbBackend;
+import data.RecommendCache;
+import db.DbAccessor;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import utils.SingletonsCreator;
-import data.RecommendCache;
 
 public class ClearReply implements Replier {
 
-    @NotNull
-    private ReplyCallback callback;
+    private final MealsBotCommands replierType = MealsBotCommands.CLEAR;
+
     @NotNull
     private RecommendCache recommendCache = SingletonsCreator.recommendCache();
-
-    public ClearReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -26,7 +24,7 @@ public class ClearReply implements Replier {
     @Override
     public void reply(@NotNull Update update) {
         Integer personId = update.getMessage().getFrom().getId();
-        if (DbBackend.clearSavedRecipes(personId)) {
+        if (DbAccessor.clearSavedRecipes(personId)) {
             recommendCache.deleteRecommended(personId);
             answer(update, "All favorites cleared!");
         }
@@ -39,6 +37,11 @@ public class ClearReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        callback.sendReply(message);
+        ReplyCallback.sendReply(message);
+    }
+
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
     }
 }

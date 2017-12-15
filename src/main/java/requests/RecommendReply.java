@@ -1,5 +1,7 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.ReplyCallback;
 import com.sun.istack.internal.Nullable;
 import data.Recipe;
 import http.RecipesRequester;
@@ -20,23 +22,19 @@ public class RecommendReply implements Replier {
 
     private final static Logger logger = LoggerFactory.getLogger(RecommendReply.class);
 
+    private MealsBotCommands replierType = MealsBotCommands.RECOMMEND;
+
     private static final String REQUEST_MORE = "more";
     private static final String REQUEST_NEXT = "next";
 
     @NotNull
     private RecipesRequester recipesRequester = new RecipesRequester();
     @NotNull
-    private ReplyCallback callback;
-    @NotNull
     private RecommendCache recommendCache = SingletonsCreator.recommendCache();
     @Nullable
     private Recipe currentRecipe = null;
     @Nullable
     private State currentState = null;
-
-    public RecommendReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -62,11 +60,11 @@ public class RecommendReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        callback.sendReply(message);
+        ReplyCallback.sendReply(message);
 
         message.setText("If you like your last recommended meal you can use \'/addtofav\' to save it to your favourite," +
                 " or type \"more\" for getting cooking steps");
-        callback.sendReply(message);
+        ReplyCallback.sendReply(message);
     }
 
     @Override
@@ -91,7 +89,7 @@ public class RecommendReply implements Replier {
                     .setChatId(update.getMessage().getChatId())
                     .setText(currentState.getReply());
             message.enableHtml(true);
-            callback.sendReply(message);
+            ReplyCallback.sendReply(message);
 
         } else if (request.contains(REQUEST_NEXT)) {
             if (currentRecipe == null) {
@@ -102,7 +100,7 @@ public class RecommendReply implements Replier {
                     .setChatId(update.getMessage().getChatId())
                     .setText(reply.equals("\n") || reply.equals("") ? "Try typing \"next\" again" : reply);
             message.enableHtml(true);
-            callback.sendReply(message);
+            ReplyCallback.sendReply(message);
         } else {
             initCall(update);
         }
@@ -151,7 +149,9 @@ public class RecommendReply implements Replier {
             Recipe.Stage stage = currentRecipe.stages.get(stepNum);
             StringBuilder result = new StringBuilder();
             for (String str: stage.steps) {
-                result.append(FormattingUtils.formatPointedText(str));
+                if (!str.equals("")) {
+                    result.append(FormattingUtils.formatPointedText(str));
+                }
             }
             result.append(stage.imgUrl).append("\n");
 
@@ -170,5 +170,10 @@ public class RecommendReply implements Replier {
         String getReply() {
             return FormattingUtils.formatBoldText(REPLY_ERROR);
         }
+    }
+
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
     }
 }
