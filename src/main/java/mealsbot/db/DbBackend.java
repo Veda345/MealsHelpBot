@@ -1,5 +1,6 @@
 package mealsbot.db;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,8 @@ public class DbBackend implements DbContract {
     @NotNull
     private final static Logger logger = LoggerFactory.getLogger(DbBackend.class);
 
-    static void createTables() {
+    @VisibleForTesting
+    public static void createTables() {
         String query = "CREATE TABLE IF NOT EXISTS " + CALORIES +
                 "(" + CaloriesTable.ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 CaloriesTable.NAME + "     TEXT    UNIQUE  NOT NULL, " +

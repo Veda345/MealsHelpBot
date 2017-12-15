@@ -1,5 +1,6 @@
 package mealsbot.db;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,8 @@ public class DatabaseInitializer {
         initDb();
     }
 
-    private static void initDb() {
+    @VisibleForTesting
+    public static void initDb() {
         DbBackend.dropTables();
         DbBackend.createTables();
         readDatabase();
