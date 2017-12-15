@@ -22,6 +22,7 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
         command2Replier.put(MealsBotCommands.CAL, new CalReply(this));
         command2Replier.put(MealsBotCommands.PFC, new PfcReply(this));
         command2Replier.put(MealsBotCommands.RECOMMEND, new RecommendReply(this));
+        command2Replier.put(MealsBotCommands.FIND, new FindReply(this));
         command2Replier.put(MealsBotCommands.NONE, new NoOpReply(this));
         command2Replier.put(MealsBotCommands.HELP, new HelpReply(this));
         command2Replier.put(MealsBotCommands.ADDTOFAV, new AddToFavReply(this));

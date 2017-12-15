@@ -1,5 +1,7 @@
 package http;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.sun.istack.internal.NotNull;
 import data.Recipe;
 
@@ -24,6 +26,8 @@ public class RecipesRequester {
     private JSONParser jsonParser = new JSONParser();
     @NotNull
     private Map<String, Recipe> allRecipes = new HashMap<>(30);
+    @NotNull
+    Multimap<String, String> allTitleRecipes = HashMultimap.create();
     @NotNull
     private List<Recipe> cache = new ArrayList<>(3);
 
@@ -57,13 +61,32 @@ public class RecipesRequester {
     }
 
     @NotNull
-    public Recipe requestFullRecipe(String recipeId) throws IOException, ParseException {
+    public Multimap<String, String> requestAllTitleRecipes() throws IOException, ParseException {
+        if (allTitleRecipes.size() == 0) {
+            List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
+            for (Recipe recipe: recipes) {
+                String[] titleWords = recipe.title.split("\\s+");
+                for (String titleWord: titleWords) {
+                    allTitleRecipes.put(titleWord.toLowerCase(),  recipe.id);
+                }
+            }
+        }
+        return allTitleRecipes;
+    }
+    @NotNull
+    public Map<String, Recipe> requestAllRecipes() throws IOException, ParseException {
         if (allRecipes.size() == 0) {
             List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
             for (Recipe recipe: recipes) {
                 allRecipes.put(recipe.id, recipe);
             }
         }
+        return allRecipes;
+    }
+
+    @NotNull
+    public Recipe requestFullRecipe(String recipeId) throws IOException, ParseException {
+        allRecipes = requestAllRecipes();
         return allRecipes.get(recipeId);
     }
 

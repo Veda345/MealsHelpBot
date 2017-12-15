@@ -10,6 +10,7 @@ public enum MealsBotCommands {
     HELP("/help"),
     ADDTOFAV("/addtofav"),
     CLEAR("/clear"),
+    FIND("/find"),
     NONE("none");
 
     @NotNull
