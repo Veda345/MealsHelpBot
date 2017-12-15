@@ -1,15 +1,15 @@
 package mealsbot.requests;
 
+import com.google.common.collect.Multimap;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
-import com.google.common.collect.Multimap;
 import mealsbot.data.Recipe;
 import mealsbot.http.RecipesRequester;
+import mealsbot.utils.FormattingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import mealsbot.utils.FormattingUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -25,8 +25,7 @@ public class FindReply implements Replier  {
 
     private final MealsBotCommands replierType = MealsBotCommands.FIND;
 
-    @NotNull
-    private RecipesRequester recipesRequester = new RecipesRequester();
+    private final RecipesRequester recipesRequester;
 
     private ArrayList<Recipe> allRequestedRecipes;
 
@@ -35,6 +34,10 @@ public class FindReply implements Replier  {
     private Multimap<String, String> allTitleRecipes = null;
 
     private Recipe currentRecipe =  null;
+
+    public FindReply(RecipesRequester recipesRequester) {
+        this.recipesRequester = recipesRequester;
+    }
 
     @Override
     public void initCall(@NotNull Update update) {

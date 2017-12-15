@@ -1,9 +1,8 @@
 package mealsbot.bot;
 
+import mealsbot.requests.Replier;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import mealsbot.requests.Replier;
-import mealsbot.utils.SingletonsCreator;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallback {
+public class MealsHelpBot extends TelegramLongPollingBot {
 
     @NotNull
     private static final String API_TOKEN = "424486608:AAHfZOwoCJt4Iok87Xn7Q-MVGq3_AClwaFE";
@@ -23,8 +22,7 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
     @NotNull
     private static Map<MealsBotCommands, Replier> command2Replier = new HashMap<>();
 
-    public MealsHelpBot() {
-        List<Replier> repliers = SingletonsCreator.getRepliers();
+    public MealsHelpBot(List<Replier> repliers) {
         command2Replier.putAll(repliers.stream().collect(Collectors.toMap(Replier::getReplierType, Function.identity())));
     }
 

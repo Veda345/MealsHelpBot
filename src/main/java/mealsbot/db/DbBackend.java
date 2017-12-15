@@ -10,9 +10,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DbBackend implements DbContract {
+class DbBackend implements DbContract {
 
-    @NotNull
     private final static Logger logger = LoggerFactory.getLogger(DbBackend.class);
 
     @VisibleForTesting

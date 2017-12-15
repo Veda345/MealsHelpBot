@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 
 /**
- * Drops and creates tables, then fills them with some mealsbot.data
+ * Drops and creates tables, then fills them with some data
  */
 public class DatabaseInitializer {
 
@@ -41,7 +41,7 @@ public class DatabaseInitializer {
 
             br.close();
         } catch (IOException e) {
-            logger.error("Error while filling tables with mealsbot.data", e);
+            logger.error("Error while filling tables with data", e);
         }
     }
 }
