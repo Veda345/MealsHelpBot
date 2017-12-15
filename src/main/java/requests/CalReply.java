@@ -1,19 +1,16 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.MealsHelpBot;
 import com.sun.istack.internal.NotNull;
-import db.DbBackend;
+import db.DbAccessor;
 import data.ProductInfo;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
 public class CalReply implements Replier {
 
-    @NotNull
-    private ReplyCallback callback;
-
-    public CalReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
+    private final MealsBotCommands replierType = MealsBotCommands.CAL;
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -24,7 +21,7 @@ public class CalReply implements Replier {
     public void reply(@NotNull Update update) {
         String reply;
 
-        ProductInfo info = DbBackend.getProductCalories(update.getMessage().getText());
+        ProductInfo info = DbAccessor.getProductCalories(update.getMessage().getText());
         if (info != null) {
             reply =  info.calories + " cal per serving (" + info.serving + ")";
         } else {
@@ -38,6 +35,11 @@ public class CalReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        callback.sendReply(message);
+        MealsHelpBot.sendReply(message);
+    }
+
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
     }
 }

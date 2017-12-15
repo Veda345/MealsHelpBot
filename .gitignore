@@ -30,3 +30,5 @@ local.properties
 *.DS_STORE
 
 custom_env.gradle
+
+food.db

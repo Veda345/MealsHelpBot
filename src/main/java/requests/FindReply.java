@@ -1,5 +1,7 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.MealsHelpBot;
 import com.google.common.collect.Multimap;
 import data.Recipe;
 import http.RecipesRequester;
@@ -18,21 +20,21 @@ import java.util.Collection;
 import static requests.RecommendReply.recipeToShortString;
 
 public class FindReply implements Replier  {
+
     private final static Logger logger = LoggerFactory.getLogger(RecommendReply.class);
+
+    private final MealsBotCommands replierType = MealsBotCommands.FIND;
 
     @NotNull
     private RecipesRequester recipesRequester = new RecipesRequester();
 
-    @NotNull
-    private ReplyCallback callback;
-
     private ArrayList<Recipe> allRequestedRecipes;
+
     private String lastRequest = "";
+
     private Multimap<String, String> allTitleRecipes = null;
+
     private Recipe currentRecipe =  null;
-    public FindReply(@com.sun.istack.internal.NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -51,7 +53,7 @@ public class FindReply implements Replier  {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        callback.sendReply(message);
+        MealsHelpBot.sendReply(message);
     }
 
     @Override
@@ -154,4 +156,8 @@ public class FindReply implements Replier  {
         return allRequestedRecipes;
     }
 
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
+    }
 }

@@ -1,17 +1,15 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.MealsHelpBot;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
 import javax.validation.constraints.NotNull;
 
 public class NoOpReply implements Replier {
-    @NotNull
-    private ReplyCallback callback;
 
-    public NoOpReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
+    private final MealsBotCommands replierType = MealsBotCommands.NONE;
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -27,6 +25,11 @@ public class NoOpReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        callback.sendReply(message);
+        MealsHelpBot.sendReply(message);
+    }
+
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
     }
 }

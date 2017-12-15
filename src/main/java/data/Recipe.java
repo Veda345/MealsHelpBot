@@ -9,13 +9,16 @@ public class Recipe {
 
     @NotNull
     public String id;
+
     @NotNull
     public String title;
-    @Nullable
+
     public String imgUrl;
-    @Nullable
+
     public List<Stage> stages;
+
     public int time;
+
     public int energy;
 
     Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
@@ -42,15 +45,15 @@ public class Recipe {
     public static class Builder {
 
         @Nullable
-        String id;
+        private String id;
         @Nullable
-        String title;
+        private String title;
         @Nullable
-        String imgUrl;
+        private String imgUrl;
         @Nullable
-        List<Stage> stages;
-        int time;
-        int energy;
+        private List<Stage> stages;
+        private int time;
+        private int energy;
 
         @NotNull
         public Builder id(@NotNull String id) {
