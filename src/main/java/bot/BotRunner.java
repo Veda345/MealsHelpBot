@@ -16,7 +16,6 @@ public class BotRunner {
     @NotNull
     private final static Logger logger = LoggerFactory.getLogger(BotRunner.class);
 
-
     public static void main(String[] args) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             System.out.println("Init db? [y/n]");
