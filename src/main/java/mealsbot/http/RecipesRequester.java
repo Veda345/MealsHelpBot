@@ -3,7 +3,10 @@ package mealsbot.http;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import mealsbot.data.Recipe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,12 +25,14 @@ public class RecipesRequester {
     private static final String RECOMMEND_URL = BASE_URL + "recommend/";
     private static final String RECIPES_URL = BASE_URL + "recipes/";
 
+    private static Logger logger = LoggerFactory.getLogger(RecipesRequester.class);
+
     @NotNull
     private JSONParser jsonParser = new JSONParser();
     @NotNull
     private Map<String, Recipe> allRecipes = new HashMap<>(30);
     @NotNull
-    Multimap<String, String> allTitleRecipes = HashMultimap.create();
+    private Multimap<String, String> allTitleRecipes = HashMultimap.create();
     @NotNull
     private List<Recipe> cache = new ArrayList<>(3);
 
@@ -49,45 +54,65 @@ public class RecipesRequester {
         return buffer.toString();
     }
 
-    @NotNull
-    public Recipe requestRecommendations() throws IOException, ParseException {
-        if (cache.size() == 0) {
-            cache.addAll(jsonParser.parseRecommendations(requestUrl(RECOMMEND_URL)));
+    @Nullable
+    public Recipe requestRecommendations() throws IOException {
+        try {
+            if (cache.size() == 0) {
+                cache.addAll(jsonParser.parseRecommendations(requestUrl(RECOMMEND_URL)));
+            }
+            if (cache.size() == 0) {
+                return null;
+            }
+            return cache.remove(0);
+        } catch (ParseException e) {
+            logger.debug("Error during json parse", e);
         }
-        if (cache.size() == 0) {
-            return null;
-        }
-        return cache.remove(0);
+        return null;
     }
 
-    @NotNull
-    public Multimap<String, String> requestAllTitleRecipes() throws IOException, ParseException {
-        if (allTitleRecipes.size() == 0) {
-            List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
-            for (Recipe recipe: recipes) {
-                String[] titleWords = recipe.title.split("\\s+");
-                for (String titleWord: titleWords) {
-                    allTitleRecipes.put(titleWord.toLowerCase(),  recipe.id);
+    @Nullable
+    public Multimap<String, String> requestAllTitleRecipes() throws IOException {
+        try {
+            if (allTitleRecipes.size() == 0) {
+                List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
+                for (Recipe recipe : recipes) {
+                    String[] titleWords = recipe.title.split("\\s+");
+                    for (String titleWord : titleWords) {
+                        allTitleRecipes.put(titleWord.toLowerCase(), recipe.id);
+                    }
                 }
             }
+            return allTitleRecipes;
+        } catch (ParseException e) {
+            logger.debug("Error during json parse", e);
         }
-        return allTitleRecipes;
-    }
-    @NotNull
-    public Map<String, Recipe> requestAllRecipes() throws IOException, ParseException {
-        if (allRecipes.size() == 0) {
-            List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
-            for (Recipe recipe: recipes) {
-                allRecipes.put(recipe.id, recipe);
-            }
-        }
-        return allRecipes;
+        return null;
     }
 
-    @NotNull
-    public Recipe requestFullRecipe(String recipeId) throws IOException, ParseException {
-        allRecipes = requestAllRecipes();
-        return allRecipes.get(recipeId);
+    @Nullable
+    public Map<String, Recipe> requestAllRecipesIfNeeded() throws IOException {
+        try {
+            if (allRecipes.size() == 0) {
+                List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
+                for (Recipe recipe : recipes) {
+                    allRecipes.put(recipe.id, recipe);
+                }
+            }
+            return allRecipes;
+        } catch (ParseException e) {
+            logger.debug("Error during json parse", e);
+        }
+        return null;
+    }
+
+    @Nullable
+    public Recipe requestFullRecipe(@NotNull String recipeId) throws IOException, ParseException {
+        allRecipes = requestAllRecipesIfNeeded();
+
+        if (allRecipes.size() > 0) {
+            return allRecipes.get(recipeId);
+        }
+        return null;
     }
 
 }

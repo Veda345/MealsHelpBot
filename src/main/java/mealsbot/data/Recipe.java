@@ -1,5 +1,6 @@
 package mealsbot.data;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
@@ -21,7 +22,8 @@ public class Recipe {
 
     public int energy;
 
-    Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
+    @VisibleForTesting
+    public Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
         this.id = id;
         this.title = title;
         this.time = time;
