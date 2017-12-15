@@ -1,5 +1,6 @@
 package mealsbot.http;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.sun.istack.internal.NotNull;
@@ -37,7 +38,8 @@ public class RecipesRequester {
     private List<Recipe> cache = new ArrayList<>(3);
 
     @NotNull
-    private String requestUrl(@NotNull String inputUrl) throws IOException {
+    @VisibleForTesting
+    public String requestUrl(@NotNull String inputUrl) throws IOException {
         URL url = new URL(inputUrl);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();
         request.connect();
@@ -90,7 +92,7 @@ public class RecipesRequester {
     }
 
     @Nullable
-    public Map<String, Recipe> requestAllRecipesIfNeeded() throws IOException {
+    private Map<String, Recipe> requestAllRecipesIfNeeded() throws IOException {
         try {
             if (allRecipes.size() == 0) {
                 List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
