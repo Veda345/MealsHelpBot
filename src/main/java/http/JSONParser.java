@@ -1,16 +1,19 @@
 package http;
 
-import com.oracle.tools.packager.Log;
 import com.sun.istack.internal.NotNull;
 import data.Recipe;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.*;
 
 class JSONParser {
+
+    private static Logger logger = LoggerFactory.getLogger(JSONParser.class);
 
     @NotNull
     List<Recipe> parseRecommendations(@NotNull String json) throws JSONException, ParseException {
@@ -75,7 +78,7 @@ class JSONParser {
             String imgUrl = jsonObject.getString("image");
             recipeBuilder.imgUrl(imgUrl);
         } catch (JSONException e) {
-            Log.debug("Error during json parse" + jsonObject);
+            logger.debug("Error during json parse {}", jsonObject);
         }
         return recipeBuilder;
     }
