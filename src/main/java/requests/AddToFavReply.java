@@ -1,14 +1,16 @@
 package requests;
 
+import bot.MealsBotCommands;
+import bot.MealsHelpBot;
 import com.sun.istack.internal.NotNull;
-import db.DbBackend;
 import data.Recipe;
+import data.RecommendCache;
+import db.DbAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import utils.SingletonsCreator;
-import data.RecommendCache;
 
 import java.sql.SQLException;
 
@@ -21,19 +23,14 @@ public class AddToFavReply implements Replier {
     private final static Logger logger = LoggerFactory.getLogger(AddToFavReply.class);
     @NotNull
     private RecommendCache recommendCache = SingletonsCreator.recommendCache();
-    @NotNull
-    private ReplyCallback callback;
+
+    private final MealsBotCommands replierType = MealsBotCommands.ADDTOFAV;
 
     /**
      * String meaning that user doesn't get any recommendation after reboot
      */
     @NotNull
     private static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
-
-
-    public AddToFavReply(@NotNull ReplyCallback callback) {
-        this.callback = callback;
-    }
 
 
     @Override
@@ -52,7 +49,7 @@ public class AddToFavReply implements Replier {
         }
         else {
             try {
-                DbBackend.addFavourite(personId, recommended);
+                DbAccessor.addFavourite(personId, recommended);
                 recommendCache.deleteRecommended(personId);
                 reply = "Successfully saved";
             }
@@ -68,7 +65,11 @@ public class AddToFavReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        callback.sendReply(message);
+        MealsHelpBot.sendReply(message);
     }
 
+    @Override
+    public MealsBotCommands getReplierType() {
+        return replierType;
+    }
 }

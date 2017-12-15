@@ -1,46 +1,46 @@
 package bot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import requests.*;
+import utils.SingletonsCreator;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallback {
+public class MealsHelpBot extends TelegramLongPollingBot {
 
     @NotNull
     private static final String API_TOKEN = "424486608:AAHfZOwoCJt4Iok87Xn7Q-MVGq3_AClwaFE";
 
-    @NotNull
-    private static Map<MealsBotCommands, Replier> command2Replier = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(MealsHelpBot.class);
 
-    {
-        command2Replier.put(MealsBotCommands.CAL, new CalReply(this));
-        command2Replier.put(MealsBotCommands.PFC, new PfcReply(this));
-        command2Replier.put(MealsBotCommands.RECOMMEND, new RecommendReply(this));
-        command2Replier.put(MealsBotCommands.NONE, new NoOpReply(this));
-        command2Replier.put(MealsBotCommands.HELP, new HelpReply(this));
-        command2Replier.put(MealsBotCommands.ADDTOFAV, new AddToFavReply(this));
-        command2Replier.put(MealsBotCommands.FAV, new FavReply(this));
-        command2Replier.put(MealsBotCommands.CLEAR, new ClearReply(this));
-    }
+    private static final MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
 
     @NotNull
     private Replier currentReplier = command2Replier.get(MealsBotCommands.NONE);
+
     @NotNull
-    private MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
+    private static Map<MealsBotCommands, Replier> command2Replier = new HashMap<>();
+
+    public MealsHelpBot() {
+        List<Replier> repliers = SingletonsCreator.getRepliers();
+        command2Replier.putAll(repliers.stream().collect(Collectors.toMap(Replier::getReplierType, Function.identity())));
+    }
 
     @Override
     public void onUpdateReceived(@NotNull Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+            // if update.getMessage().hasText() then text != null
             String query = update.getMessage().getText();
-            if (query == null) {
-                return;
-            }
 
             query = query.toLowerCase();
 
@@ -56,36 +56,30 @@ public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallbac
         }
     }
 
-    private MealsBotCommands getNewCommand(@NotNull String query) {
+    public static void sendReply(@NotNull SendMessage message) {
         try {
-            return MealsBotCommands.getCommandByName(query);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            message.setReplyMarkup(replyKeyboard.getKeyboardMarkup());
+            SingletonsCreator.mealsHelpBot().sendMessage(message);
+        } catch (TelegramApiException e) {
+            logger.error("Error while sending a message", e);
         }
-        return null;
     }
 
+    /**
+     * If no command fits query string, returns {@link MealsBotCommands#NONE}
+     */
     @NotNull
+    private MealsBotCommands getNewCommand(@NotNull String query) {
+        return MealsBotCommands.getCommandByName(query);
+    }
+
     @Override
     public String getBotUsername() {
         return "MealsHelpBot";
     }
 
-    @NotNull
     @Override
     public String getBotToken() {
         return API_TOKEN;
     }
-
-    @NotNull
-    @Override
-    public void sendReply(@NotNull SendMessage message) {
-        try {
-            message.setReplyMarkup(replyKeyboard.getKeyboardMarkup());
-            sendMessage(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
