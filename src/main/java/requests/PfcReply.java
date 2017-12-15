@@ -1,7 +1,7 @@
 package requests;
 
 import bot.MealsBotCommands;
-import bot.MealsHelpBot;
+import bot.ReplyCallback;
 import data.ProductInfo;
 import db.DbAccessor;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -36,7 +36,7 @@ public class PfcReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        MealsHelpBot.sendReply(message);
+        ReplyCallback.sendReply(message);
     }
 
     @Override

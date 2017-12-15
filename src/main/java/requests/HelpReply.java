@@ -1,7 +1,7 @@
 package requests;
 
 import bot.MealsBotCommands;
-import bot.MealsHelpBot;
+import bot.ReplyCallback;
 import com.sun.istack.internal.NotNull;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
@@ -29,7 +29,7 @@ public class HelpReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        MealsHelpBot.sendReply(message);
+        ReplyCallback.sendReply(message);
     }
 
     @Override

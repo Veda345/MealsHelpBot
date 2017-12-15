@@ -1,7 +1,7 @@
 package requests;
 
 import bot.MealsBotCommands;
-import bot.MealsHelpBot;
+import bot.ReplyCallback;
 import com.sun.istack.internal.NotNull;
 import data.Recipe;
 import data.RecommendCache;
@@ -65,7 +65,7 @@ public class AddToFavReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        MealsHelpBot.sendReply(message);
+        ReplyCallback.sendReply(message);
     }
 
     @Override

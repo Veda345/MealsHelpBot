@@ -1,7 +1,7 @@
 package requests;
 
 import bot.MealsBotCommands;
-import bot.MealsHelpBot;
+import bot.ReplyCallback;
 import com.sun.istack.internal.Nullable;
 import data.Recipe;
 import http.RecipesRequester;
@@ -60,11 +60,11 @@ public class RecommendReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        MealsHelpBot.sendReply(message);
+        ReplyCallback.sendReply(message);
 
         message.setText("If you like your last recommended meal you can use \'/addtofav\' to save it to your favourite," +
                 " or type \"more\" for getting cooking steps");
-        MealsHelpBot.sendReply(message);
+        ReplyCallback.sendReply(message);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class RecommendReply implements Replier {
                     .setChatId(update.getMessage().getChatId())
                     .setText(currentState.getReply());
             message.enableHtml(true);
-            MealsHelpBot.sendReply(message);
+            ReplyCallback.sendReply(message);
 
         } else if (request.contains(REQUEST_NEXT)) {
             if (currentRecipe == null) {
@@ -100,7 +100,7 @@ public class RecommendReply implements Replier {
                     .setChatId(update.getMessage().getChatId())
                     .setText(reply.equals("\n") || reply.equals("") ? "Try typing \"next\" again" : reply);
             message.enableHtml(true);
-            MealsHelpBot.sendReply(message);
+            ReplyCallback.sendReply(message);
         } else {
             initCall(update);
         }

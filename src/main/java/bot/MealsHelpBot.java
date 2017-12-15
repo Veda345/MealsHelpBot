@@ -1,12 +1,8 @@
 package bot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
-import requests.*;
+import requests.Replier;
 import utils.SingletonsCreator;
 
 import javax.validation.constraints.NotNull;
@@ -16,14 +12,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class MealsHelpBot extends TelegramLongPollingBot {
+public class MealsHelpBot extends TelegramLongPollingBot implements ReplyCallback {
 
     @NotNull
     private static final String API_TOKEN = "424486608:AAHfZOwoCJt4Iok87Xn7Q-MVGq3_AClwaFE";
-
-    private static final Logger logger = LoggerFactory.getLogger(MealsHelpBot.class);
-
-    private static final MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
 
     @NotNull
     private Replier currentReplier = command2Replier.get(MealsBotCommands.NONE);
@@ -53,15 +45,6 @@ public class MealsHelpBot extends TelegramLongPollingBot {
             } else {
                 currentReplier.reply(update);
             }
-        }
-    }
-
-    public static void sendReply(@NotNull SendMessage message) {
-        try {
-            message.setReplyMarkup(replyKeyboard.getKeyboardMarkup());
-            SingletonsCreator.mealsHelpBot().sendMessage(message);
-        } catch (TelegramApiException e) {
-            logger.error("Error while sending a message", e);
         }
     }
 

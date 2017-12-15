@@ -1,7 +1,7 @@
 package requests;
 
 import bot.MealsBotCommands;
-import bot.MealsHelpBot;
+import bot.ReplyCallback;
 import com.sun.istack.internal.NotNull;
 import db.DbAccessor;
 import data.ProductInfo;
@@ -35,7 +35,7 @@ public class CalReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        MealsHelpBot.sendReply(message);
+        ReplyCallback.sendReply(message);
     }
 
     @Override
