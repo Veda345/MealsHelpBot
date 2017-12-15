@@ -17,8 +17,10 @@ import static com.xebialabs.restito.semantics.Action.stringContent;
 
 public class RecipesRequesterStubServerTest {
 
+    private final JSONParser jsonParser = new JSONParser();
+
     @NotNull
-    private final RecipesRequester mRequester = new RecipesRequester();
+    private final RecipesRequester mRequester = new RecipesRequester(jsonParser);
 
     private static final int PORT = 3438;
 

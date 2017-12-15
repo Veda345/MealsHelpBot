@@ -17,8 +17,10 @@ import static org.junit.Assert.*;
 
 public class RecipesRequesterTest {
 
+    private final JSONParser jsonParser = new JSONParser();
+
     @NotNull
-    private final RecipesRequester mRequester = new RecipesRequester();
+    private final RecipesRequester mRequester = new RecipesRequester(jsonParser);
 
     @Test
     public void test_requestRecommendations() throws Exception {
