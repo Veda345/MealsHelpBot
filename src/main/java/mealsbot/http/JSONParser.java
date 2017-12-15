@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.*;
 
-class JSONParser {
+public class JSONParser {
 
     @NotNull
     List<Recipe> parseRecommendations(@NotNull String json) throws JSONException, ParseException {

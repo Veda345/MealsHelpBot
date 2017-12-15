@@ -1,8 +1,8 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.NotNull;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
-import com.sun.istack.internal.NotNull;
 import mealsbot.data.Recipe;
 import mealsbot.data.RecommendCache;
 import mealsbot.db.DbAccessor;
@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import mealsbot.utils.SingletonsCreator;
 
 import java.sql.SQLException;
 
@@ -19,19 +18,20 @@ import java.sql.SQLException;
  */
 public class AddToFavReply implements Replier {
 
-    @NotNull
     private final static Logger logger = LoggerFactory.getLogger(AddToFavReply.class);
-    @NotNull
-    private RecommendCache recommendCache = SingletonsCreator.recommendCache();
+
+    private final RecommendCache recommendCache;
 
     private final MealsBotCommands replierType = MealsBotCommands.ADDTOFAV;
 
     /**
      * String meaning that user doesn't get any recommendation after reboot
      */
-    @NotNull
     private static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
 
+    public AddToFavReply(RecommendCache recommendCache) {
+        this.recommendCache = recommendCache;
+    }
 
     @Override
     public void initCall(@NotNull Update update) {

@@ -31,4 +31,4 @@ local.properties
 
 custom_env.gradle
 
-food.mealsbot.db
+food.db
