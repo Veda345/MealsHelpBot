@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static mealsbot.requests.RecommendReply.recipeToShortString;
 
@@ -27,13 +29,13 @@ public class FindReply implements Replier  {
 
     private final RecipesRequester recipesRequester;
 
-    private ArrayList<Recipe> allRequestedRecipes;
+    private volatile List<Recipe> allRequestedRecipes;
 
-    private String lastRequest = "";
+    private volatile String lastRequest = "";
 
-    private Multimap<String, String> allTitleRecipes = null;
+    private Multimap<String, String> allTitleRecipes;
 
-    private Recipe currentRecipe =  null;
+    private volatile Recipe currentRecipe;
 
     public FindReply(RecipesRequester recipesRequester) {
         this.recipesRequester = recipesRequester;
@@ -41,7 +43,6 @@ public class FindReply implements Replier  {
 
     @Override
     public void initCall(@NotNull Update update) {
-
         answer(update, "What recipe do you want to find?");
         lastRequest = "";
         try {
@@ -65,75 +66,98 @@ public class FindReply implements Replier  {
         String request = update.getMessage().getText();
         switch (lastRequest) {
             case "":
-                lastRequest = "find";
-                try {
-                    allRequestedRecipes = getRequestRecipes(allTitleRecipes, request.toLowerCase());
-                } catch (IOException | ParseException e) {
-                    logger.error("Error while getting requst ");
-                }
-                if (allRequestedRecipes != null) {
-                    reply = printShortRecipes(allRequestedRecipes);
-                } else {
-                    reply = RETRY_FIND;
-                }
+                reply = getReplyForEmptyString(request);
                 break;
             case "find":
-                lastRequest = "";
-                try {
-                    int num = Integer.parseInt(request) - 1;
-                    if (num >= 0 && num <= allRequestedRecipes.size()) {
-                        try {
-                            currentRecipe = allRequestedRecipes.get(num);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (currentRecipe != null) {
-                            lastRequest = "short";
-                            reply = recipeToShortString(currentRecipe);
-                        } else {
-                            reply = RETRY_MSG;
-                        }
-                    }
-                } catch (NumberFormatException nx) {
-                    reply = RETRY_MSG;
-                }
+                reply = getReplyForFind(request);
                 break;
             case "short":
-                lastRequest = "";
-                if (request.equals("more")) {
-                    lastRequest = "more";
-                    if (currentRecipe != null) {
-                        try {
-                            currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
-                            reply = FormattingUtils.formatTitle(currentRecipe.title) + "\n" +
-                                    "If you want to se whole recipe, please, insert" +
-                                    FormattingUtils.formatBoldText("\"next\"\n");
-                        } catch (Exception e) {
-                            logger.error("Error while requesting and parsing recipe at find", e);
-                            reply = Replier.RETRY_MSG;
-                        }
-                    }
-                    else {
-                        logger.warn("Unexpectedly currentRecipe is null at find");
-                        reply = Replier.RETRY_MSG;
-                    }
-                }
+                reply = getReplyForShort(request);
                 break;
             case "more":
-                lastRequest = "done";
-                if (currentRecipe == null) {
-                    reply = "Sorry, something went wrong";
-                }
-                else {
-                    StringBuilder recipeText = new StringBuilder();
-                    for (Recipe.Stage stage : currentRecipe.stages) {
-                        stage.steps.forEach(step -> recipeText.append(FormattingUtils.formatPointedText(step)));
-                    }
-                    reply = recipeText.toString();
-                }
+                reply = getReplyForMore();
                 break;
         }
         answer(update, reply);
+    }
+
+    private String getReplyForEmptyString(String request) {
+        String reply;
+        lastRequest = "find";
+        try {
+            allRequestedRecipes = getRequestRecipes(allTitleRecipes, request.toLowerCase());
+        } catch (IOException | ParseException e) {
+            logger.error("Error while getting recipes for request {}", request, e);
+        }
+
+        if (allRequestedRecipes != null) {
+            reply = printShortRecipes(allRequestedRecipes);
+        } else {
+            reply = RETRY_FIND;
+        }
+        return reply;
+    }
+
+    private String getReplyForFind(String request) {
+        lastRequest = "";
+        String reply = "";
+        try {
+            int num = Integer.parseInt(request) - 1;
+            final List<Recipe> allRequestedRecipes = this.allRequestedRecipes;
+            if (num >= 0 && num <= allRequestedRecipes.size()) {
+                currentRecipe = allRequestedRecipes.get(num);
+                if (currentRecipe != null) {
+                    lastRequest = "short";
+                    reply = recipeToShortString(currentRecipe);
+                } else {
+                    reply = RETRY_MSG;
+                }
+            }
+        } catch (NumberFormatException nx) {
+            logger.error("Can't parse request number {}", request);
+            reply = RETRY_MSG;
+        }
+        return reply;
+    }
+
+    private String getReplyForShort(String request) {
+        lastRequest = "";
+        String reply = "";
+        if (request.equals("more")) {
+            lastRequest = "more";
+            if (currentRecipe != null) {
+                try {
+                    currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
+                    reply = FormattingUtils.formatTitle(currentRecipe.title) + "\n" +
+                            "If you want to se whole recipe, please, insert" +
+                            FormattingUtils.formatBoldText("\"next\"\n");
+                } catch (Exception e) {
+                    logger.error("Error while requesting and parsing recipe at find for request {}", request, e);
+                    reply = Replier.RETRY_MSG;
+                }
+            }
+            else {
+                logger.warn("Unexpectedly currentRecipe is null at find");
+                reply = Replier.RETRY_MSG;
+            }
+        }
+        return reply;
+    }
+
+    private String getReplyForMore() {
+        String reply;
+        lastRequest = "done";
+        if (currentRecipe == null) {
+            reply = "Sorry, something went wrong";
+        }
+        else {
+            StringBuilder recipeText = new StringBuilder();
+            for (Recipe.Stage stage : currentRecipe.stages) {
+                stage.steps.forEach(step -> recipeText.append(FormattingUtils.formatPointedText(step)));
+            }
+            reply = recipeText.toString();
+        }
+        return reply;
     }
 
     private String printShortRecipes(Collection<Recipe> allRequestedRecipes) {
@@ -143,21 +167,24 @@ public class FindReply implements Replier  {
         else {
             answer.append("recipe:\n");
         }
-        int num = 1;
 
+        int num = 1;
         for (Recipe recipe: allRequestedRecipes) {
             answer.append(num).append(") ").append(recipe.title).append("\n");
             num++;
         }
-        answer.append("Print number of recipe you want to see " +
-                "or 0 if you want to try something else");
+
+        if (num != 0) {
+            answer.append("Print number of recipe you want to see " +
+                    "or 0 if you want to try something else");
+        }
         return answer.toString();
 
     }
 
-    private ArrayList<Recipe> getRequestRecipes(Multimap<String, String> allTitleRecipes,
+    private List<Recipe> getRequestRecipes(Multimap<String, String> allTitleRecipes,
                                                 String requestRecipe) throws IOException, ParseException {
-        ArrayList<Recipe> allRequestedRecipes = new ArrayList<>();
+        List<Recipe> allRequestedRecipes = Collections.synchronizedList(new ArrayList<Recipe>());
 
         Collection<String> recipesId = allTitleRecipes.get(requestRecipe);
         for (String id : recipesId) {

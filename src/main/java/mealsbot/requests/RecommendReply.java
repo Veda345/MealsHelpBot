@@ -28,9 +28,9 @@ public class RecommendReply implements Replier {
 
     private final RecommendCache recommendCache;
 
-    private Recipe currentRecipe;
+    private volatile Recipe currentRecipe;
 
-    private State currentState;
+    private volatile State currentState;
 
 
     public RecommendReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
@@ -76,38 +76,48 @@ public class RecommendReply implements Replier {
         String request = update.getMessage().getText();
 
         if (request.contains(REQUEST_MORE)) {
-            if (currentRecipe != null) {
-                try {
-                    currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
-                    currentState = new InitState();
-                } catch (Exception e) {
-                    currentState = new ErrorState();
-                    logger.error("Error while requesting and parsing recipe", e);
-                }
-            } else {
-                currentState = new ErrorState();
-                logger.warn("Unexpectedly currentRecipe is null");
-            }
-
-            SendMessage message = new SendMessage()
-                    .setChatId(update.getMessage().getChatId())
-                    .setText(currentState.getReply());
-            message.enableHtml(true);
-            ReplyCallback.sendReply(message);
-
+            sendReplyForMore(update);
         } else if (request.contains(REQUEST_NEXT)) {
-            if (currentRecipe == null) {
-                currentState = new ErrorState();
-            }
-            String reply = currentState.getReply();
-            SendMessage message = new SendMessage()
-                    .setChatId(update.getMessage().getChatId())
-                    .setText(reply.equals("\n") || reply.equals("") ? "Try typing \"next\" again" : reply);
-            message.enableHtml(true);
-            ReplyCallback.sendReply(message);
+            sendReplyForNext(update);
         } else {
             initCall(update);
         }
+    }
+
+    private void sendReplyForMore(@NotNull Update update) {
+        if (currentRecipe != null) {
+            try {
+                currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
+                currentState = new InitState();
+            } catch (Exception e) {
+                currentState = new ErrorState();
+                logger.error("Error while requesting and parsing recipe", e);
+            }
+        } else {
+            currentState = new ErrorState();
+            logger.warn("Unexpectedly currentRecipe is null");
+        }
+
+        SendMessage message = createSendMessage(update, currentState.getReply());
+        ReplyCallback.sendReply(message);
+    }
+
+    private SendMessage createSendMessage(@NotNull Update update, String text) {
+        SendMessage message = new SendMessage()
+                .setChatId(update.getMessage().getChatId())
+                .setText(text);
+        message.enableHtml(true);
+        return message;
+    }
+
+    private void sendReplyForNext(@NotNull Update update) {
+        if (currentRecipe == null) {
+            currentState = new ErrorState();
+        }
+        String reply = currentState.getReply();
+        SendMessage message = createSendMessage(update,
+                reply.equals("\n") || reply.equals("") ? "Try typing \"next\" again" : reply);
+        ReplyCallback.sendReply(message);
     }
 
     static String recipeToShortString(@NotNull Recipe recipe) {
@@ -123,8 +133,6 @@ public class RecommendReply implements Replier {
     }
 
     private class InitState extends State {
-
-        @NotNull
         @Override
         String getReply() {
             String result = FormattingUtils.formatTitle(currentRecipe.title) + "\n"+
@@ -142,7 +150,6 @@ public class RecommendReply implements Replier {
             stepNum = num;
         }
 
-        @NotNull
         @Override
         String getReply() {
             if (stepNum >= currentRecipe.stages.size()) {
@@ -166,7 +173,6 @@ public class RecommendReply implements Replier {
     private class ErrorState extends State {
         private static final String REPLY_ERROR = "Internal error occurred! Try another command...";
 
-        @NotNull
         @Override
         String getReply() {
             return FormattingUtils.formatBoldText(REPLY_ERROR);

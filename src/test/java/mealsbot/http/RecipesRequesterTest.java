@@ -2,9 +2,7 @@ package mealsbot.http;
 
 import com.google.common.collect.Multimap;
 import com.sun.istack.internal.NotNull;
-import com.sun.org.apache.regexp.internal.RE;
 import mealsbot.data.Recipe;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +10,6 @@ import org.mockito.Mock;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

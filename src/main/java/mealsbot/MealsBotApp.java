@@ -7,12 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.ApiContextInitializer;
 
-import javax.validation.constraints.NotNull;
-
 @SpringBootApplication
 @Configuration
 public class MealsBotApp {
-    @NotNull
+
     private final static Logger logger = LoggerFactory.getLogger(MealsBotApp.class);
 
     public static void main(String[] args) {
