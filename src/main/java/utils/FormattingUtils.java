@@ -3,9 +3,8 @@ package utils;
 import javax.validation.constraints.NotNull;
 
 public class FormattingUtils {
-    private FormattingUtils() {
 
-    }
+    private FormattingUtils() {}
 
     @NotNull
     public static String formatTitle(@NotNull String title) {

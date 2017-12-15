@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+import utils.SingletonsCreator;
 
 import javax.validation.constraints.NotNull;
 import java.io.*;
@@ -17,7 +18,22 @@ public class BotRunner {
 
 
     public static void main(String[] args) {
-//        initDb();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            System.out.println("Init db? [y/n]");
+            String ans = reader.readLine();
+            switch (ans) {
+                case "y" :
+                    initDb();
+                    break;
+                case "n" :
+                    break;
+                default:
+                    System.out.println("You've typed something strange, won't init");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         startBot();
     }
 
@@ -53,9 +69,9 @@ public class BotRunner {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
-            telegramBotsApi.registerBot(new MealsHelpBot());
+            telegramBotsApi.registerBot(SingletonsCreator.mealsHelpBot());
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.error("Error while registering bot", e);
         }
     }
 }

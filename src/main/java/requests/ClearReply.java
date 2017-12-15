@@ -4,15 +4,15 @@ import com.sun.istack.internal.NotNull;
 import db.DbBackend;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import utils.BeanCreator;
-import utils.RecommendCache;
+import utils.SingletonsCreator;
+import data.RecommendCache;
 
 public class ClearReply implements Replier {
 
     @NotNull
     private ReplyCallback callback;
     @NotNull
-    private RecommendCache recommendCache = BeanCreator.recommendCache();
+    private RecommendCache recommendCache = SingletonsCreator.recommendCache();
 
     public ClearReply(@NotNull ReplyCallback callback) {
         this.callback = callback;

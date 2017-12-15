@@ -1,6 +1,6 @@
-package utils;
+package data;
 
-import http.Recipe;
+import data.Recipe;
 
 import javax.validation.constraints.NotNull;
 import java.util.Map;

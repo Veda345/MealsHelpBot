@@ -2,6 +2,7 @@ package http;
 
 import com.oracle.tools.packager.Log;
 import com.sun.istack.internal.NotNull;
+import data.Recipe;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

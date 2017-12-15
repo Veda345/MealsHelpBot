@@ -1,9 +1,7 @@
 package requests;
 
 import db.DbBackend;
-import db.ProductInfo;
-import http.Recipe;
-import http.RecipesRequester;
+import data.ProductInfo;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 

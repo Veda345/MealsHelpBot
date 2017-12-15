@@ -1,4 +1,4 @@
-package http;
+package data;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
@@ -18,7 +18,7 @@ public class Recipe {
     public int time;
     public int energy;
 
-    public Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
+    Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
         this.id = id;
         this.title = title;
         this.time = time;
@@ -33,7 +33,7 @@ public class Recipe {
         @NotNull
         public String imgUrl;
 
-        Stage(@NotNull List<String> steps, @Nullable String imgUrl) {
+        public Stage(@NotNull List<String> steps, @Nullable String imgUrl) {
             this.steps = steps;
             this.imgUrl = imgUrl;
         }

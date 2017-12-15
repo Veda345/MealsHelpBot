@@ -2,13 +2,13 @@ package requests;
 
 import com.sun.istack.internal.NotNull;
 import db.DbBackend;
-import http.Recipe;
+import data.Recipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import utils.BeanCreator;
-import utils.RecommendCache;
+import utils.SingletonsCreator;
+import data.RecommendCache;
 
 import java.sql.SQLException;
 
@@ -20,7 +20,7 @@ public class AddToFavReply implements Replier {
     @NotNull
     private final static Logger logger = LoggerFactory.getLogger(AddToFavReply.class);
     @NotNull
-    private RecommendCache recommendCache = BeanCreator.recommendCache();
+    private RecommendCache recommendCache = SingletonsCreator.recommendCache();
     @NotNull
     private ReplyCallback callback;
 

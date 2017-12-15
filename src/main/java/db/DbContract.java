@@ -36,5 +36,6 @@ interface DbContract {
         String TIME = "time";
         String ENERGY = "energy";
         String IMGURL = "imgUrl";
+        String STEPS = "steps";
     }
 }
