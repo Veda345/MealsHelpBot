@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Execute mealsbot.requests to database
+ * Execute requests to database
  */
 public class DbAccessor implements DbContract {
 

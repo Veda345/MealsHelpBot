@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 interface DbContract {
 
     @NotNull
-    String DATABASE = "jdbc:sqlite:food.mealsbot.db";
+    String DATABASE = "jdbc:sqlite:food.db";
 
     @NotNull
     String CALORIES = "CALORIES";

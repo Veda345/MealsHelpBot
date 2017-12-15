@@ -1,20 +1,22 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.NotNull;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
-import com.sun.istack.internal.NotNull;
 import mealsbot.data.RecommendCache;
 import mealsbot.db.DbAccessor;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import mealsbot.utils.SingletonsCreator;
 
 public class ClearReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.CLEAR;
 
-    @NotNull
-    private RecommendCache recommendCache = SingletonsCreator.recommendCache();
+    private final RecommendCache recommendCache;
+
+    public ClearReply(RecommendCache recommendCache) {
+        this.recommendCache = recommendCache;
+    }
 
     @Override
     public void initCall(@NotNull Update update) {

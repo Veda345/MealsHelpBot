@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.util.*;
 
-class JSONParser {
+public class JSONParser {
 
     private static Logger logger = LoggerFactory.getLogger(JSONParser.class);
 

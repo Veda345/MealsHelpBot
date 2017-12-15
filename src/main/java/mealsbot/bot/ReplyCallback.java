@@ -1,24 +1,33 @@
 package mealsbot.bot;
 
+import mealsbot.requests.MealsReplyKeyboard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-import mealsbot.requests.MealsReplyKeyboard;
-import mealsbot.utils.SingletonsCreator;
 
 import javax.validation.constraints.NotNull;
 
-public interface ReplyCallback {
+@Component
+public class ReplyCallback {
 
-    Logger logger = LoggerFactory.getLogger(ReplyCallback.class);
+    private static Logger logger = LoggerFactory.getLogger(ReplyCallback.class);
 
-    MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
+    private static MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
 
-    static void sendReply(@NotNull SendMessage message) {
+    private static MealsHelpBot mealsHelpBot;
+
+    @Autowired
+    public ReplyCallback(MealsHelpBot mealsHelpBot) {
+        ReplyCallback.mealsHelpBot = mealsHelpBot;
+    }
+
+    public static void sendReply(@NotNull SendMessage message) {
         try {
             message.setReplyMarkup(replyKeyboard.getKeyboardMarkup());
-            SingletonsCreator.mealsHelpBot().sendMessage(message);
+            mealsHelpBot.sendMessage(message);
         } catch (TelegramApiException e) {
             logger.error("Error while sending a message", e);
         }
