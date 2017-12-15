@@ -2,19 +2,16 @@ package mealsbot.requests;
 
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
-import com.sun.istack.internal.Nullable;
 import mealsbot.data.Recipe;
+import mealsbot.data.RecommendCache;
 import mealsbot.http.RecipesRequester;
+import mealsbot.utils.FormattingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import mealsbot.utils.SingletonsCreator;
-import mealsbot.utils.FormattingUtils;
-import mealsbot.data.RecommendCache;
 
 import javax.validation.constraints.NotNull;
-
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -27,24 +24,31 @@ public class RecommendReply implements Replier {
     private static final String REQUEST_MORE = "more";
     private static final String REQUEST_NEXT = "next";
 
-    @NotNull
-    private RecipesRequester recipesRequester = new RecipesRequester();
-    @NotNull
-    private RecommendCache recommendCache = SingletonsCreator.recommendCache();
-    @Nullable
-    private Recipe currentRecipe = null;
-    @Nullable
-    private State currentState = null;
+    private final RecipesRequester recipesRequester;
+
+    private final RecommendCache recommendCache;
+
+    private Recipe currentRecipe;
+
+    private State currentState;
+
+
+    public RecommendReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
+        this.recipesRequester = recipesRequester;
+        this.recommendCache = recommendCache;
+    }
 
     @Override
     public void initCall(@NotNull Update update) {
         String reply;
         Recipe recipe = null;
+
         try {
             recipe = recipesRequester.requestRecommendations();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while requesting recipes", e);
         }
+
         if (recipe != null) {
             reply = recipeToShortString(recipe);
             try {
@@ -107,7 +111,6 @@ public class RecommendReply implements Replier {
     }
 
     static String recipeToShortString(@NotNull Recipe recipe) {
-
         return "What about \"" + FormattingUtils.formatTitle(recipe.title) + "\"?\n" +
                 FormattingUtils.formatBoldText("Time for cooking: ") + recipe.time + " min\n" +
                 FormattingUtils.formatBoldText("Energy: ") + recipe.energy + " Kcal\n" +
@@ -161,8 +164,6 @@ public class RecommendReply implements Replier {
     }
 
     private class ErrorState extends State {
-
-        @NotNull
         private static final String REPLY_ERROR = "Internal error occurred! Try another command...";
 
         @NotNull

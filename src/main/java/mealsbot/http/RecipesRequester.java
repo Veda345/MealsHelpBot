@@ -15,29 +15,29 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RecipesRequester {
+
+    private static final Logger logger = LoggerFactory.getLogger(RecipesRequester.class);
 
     private static final String BASE_URL = "https://intense-earth-33481.herokuapp.com/";
     private static final String RECOMMEND_URL = BASE_URL + "recommend/";
     private static final String RECIPES_URL = BASE_URL + "recipes/";
 
-    private static Logger logger = LoggerFactory.getLogger(RecipesRequester.class);
+    private final JSONParser jsonParser;
 
-    @NotNull
-    private JSONParser jsonParser = new JSONParser();
-    @NotNull
     private Map<String, Recipe> allRecipes = new HashMap<>(30);
-    @NotNull
-    private Multimap<String, String> allTitleRecipes = HashMultimap.create();
-    @NotNull
-    private List<Recipe> cache = new ArrayList<>(3);
 
-    @NotNull
+    private final Multimap<String, String> allTitleRecipes = HashMultimap.create();
+
+    private final List<Recipe> cache = new ArrayList<>(3);
+
+    public RecipesRequester(JSONParser jsonParser) {
+        this.jsonParser = jsonParser;
+    }
+
+    @Nullable
     @VisibleForTesting
     public String requestUrl(@NotNull String inputUrl) throws IOException {
         URL url = new URL(inputUrl);
@@ -104,7 +104,7 @@ public class RecipesRequester {
         } catch (ParseException e) {
             logger.debug("Error during json parse", e);
         }
-        return null;
+        return Collections.emptyMap();
     }
 
     @Nullable
@@ -116,5 +116,4 @@ public class RecipesRequester {
         }
         return null;
     }
-
 }
