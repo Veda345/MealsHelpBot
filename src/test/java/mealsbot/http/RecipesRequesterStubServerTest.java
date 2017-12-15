@@ -6,6 +6,7 @@ import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -14,11 +15,15 @@ import java.util.function.Consumer;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.status;
 import static com.xebialabs.restito.semantics.Action.stringContent;
+import static org.mockito.Mockito.mock;
 
 public class RecipesRequesterStubServerTest {
 
+    @Mock
+    private JSONParser jsonParser = mock(JSONParser.class);
+
     @NotNull
-    private final RecipesRequester mRequester = new RecipesRequester();
+    private final RecipesRequester mRequester = new RecipesRequester(jsonParser);
 
     private static final int PORT = 3438;
 

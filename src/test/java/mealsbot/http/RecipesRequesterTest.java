@@ -6,19 +6,33 @@ import com.sun.org.apache.regexp.internal.RE;
 import mealsbot.data.Recipe;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RecipesRequesterTest {
 
+    @Mock
+    private JSONParser jsonParser = mock(JSONParser.class);
+
     @NotNull
-    private final RecipesRequester mRequester = new RecipesRequester();
+    private final RecipesRequester mRequester = new RecipesRequester(jsonParser);
+
+    @Before
+    public void setUp() throws Exception {
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe("57bfe641a6bae0f91575a084", "курица", 10, 10, "", null));
+        recipes.add(new Recipe("57e2411cf36d281f21d84ac1", "Паста с шафраном и рикоттой", 10, 10, "", null));
+        when(jsonParser.parseRecipes(anyString())).thenReturn(recipes);
+        when(jsonParser.parseRecommendations(anyString())).thenReturn(recipes);
+    }
 
     @Test
     public void test_requestRecommendations() throws Exception {
