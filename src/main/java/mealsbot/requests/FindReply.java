@@ -100,7 +100,7 @@ public class FindReply implements Replier {
     }
 
     @NotNull
-    private String getReplyForStart(@NotNull String request) {
+    String getReplyForStart(@NotNull String request) {
         String reply;
         lastRequest = "find";
         try {

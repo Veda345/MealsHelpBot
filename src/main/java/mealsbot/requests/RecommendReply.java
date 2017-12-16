@@ -149,7 +149,7 @@ public class RecommendReply implements Replier {
         @Override
         String getReply() {
             String result = FormattingUtils.formatTitle(currentRecipe.title) + "\n"+
-                    "Чтобы увидеть рецепт по шагам, введите "+
+                    "If you want to see whole recipe, insert "+
                     FormattingUtils.formatBoldText("\"more\"\n");
             currentState = new StepState(0);
             return result;

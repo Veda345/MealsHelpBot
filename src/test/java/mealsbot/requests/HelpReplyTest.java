@@ -1,11 +1,6 @@
 package mealsbot.requests;
 
-import com.google.common.collect.Multimap;
-import com.sun.istack.internal.Nullable;
 import mealsbot.bot.ReplyCallback;
-import mealsbot.data.Recipe;
-import mealsbot.data.RecommendCache;
-import mealsbot.http.RecipesRequester;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,25 +10,18 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
 
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class FindReplyTest {
-    private RecommendCache recommendCache = mock(RecommendCache.class);
+
+public class HelpReplyTest {
     private ReplyCallback replyCallback = mock(ReplyCallback.class);
     private Message message = mock(Message.class);
     private Update update = mock(Update.class);
-    private Recipe recipe = mock(Recipe.class);
-    private Multimap<String, String> allTitleRecipes = mock(Multimap.class);;
-    private RecipesRequester recipesRequester = mock(RecipesRequester.class);
-    private FindReply reply = new FindReply(recipesRequester, recommendCache);
+
+    private HelpReply reply = new HelpReply();
 
     @Before
     public void setUp() {
@@ -46,7 +34,6 @@ public class FindReplyTest {
         when(message.getText()).thenReturn("test");
         when(message.getFrom()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
-        when(recommendCache.getRecommended(userId)).thenReturn(recipe);
     }
 
     @Test
@@ -55,7 +42,13 @@ public class FindReplyTest {
 
         ArgumentCaptor<SendMessage> sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
         verify(replyCallback).sendReply(sendMessageCaptor.capture());
-        Assert.assertEquals("What recipe do you want to find?",
+        Assert.assertEquals("Please type \'/cal\' for getting calories for product info,\n" +
+                        "\'/pfc\' for getting protein, fat and carb for product info,\n" +
+                        "\'/recommend\' for getting an advice,\n" +
+                        "\'/fav\' for getting your favourite recipes,\n" +
+                        "\'/addtofav\' to save your recent recommendation,\n" +
+                        "\'/find\' to find recipes with some words in title",
                 sendMessageCaptor.getValue().getText());
     }
+
 }
