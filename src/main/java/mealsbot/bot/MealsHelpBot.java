@@ -1,28 +1,28 @@
 package mealsbot.bot;
 
+import com.sun.istack.internal.Nullable;
 import mealsbot.requests.Replier;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MealsHelpBot extends TelegramLongPollingBot {
 
-    @NotNull
     private static final String API_TOKEN = "424486608:AAHfZOwoCJt4Iok87Xn7Q-MVGq3_AClwaFE";
 
-    @NotNull
+    @Nullable
     private Replier currentReplier = command2Replier.get(MealsBotCommands.NONE);
 
     @NotNull
-    private static Map<MealsBotCommands, Replier> command2Replier = new HashMap<>();
+    private final static Map<MealsBotCommands, Replier> command2Replier = new ConcurrentHashMap<>();
 
-    public MealsHelpBot(List<Replier> repliers) {
+    public MealsHelpBot(@NotNull List<Replier> repliers) {
         command2Replier.putAll(repliers.stream().collect(Collectors.toMap(Replier::getReplierType, Function.identity())));
     }
 

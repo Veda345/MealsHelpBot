@@ -13,17 +13,18 @@ public enum MealsBotCommands {
     FIND("/find"),
     NONE("none");
 
-    @NotNull
     public final String name;
 
     MealsBotCommands(@NotNull String name) {
         this.name = name;
     }
 
+    @NotNull
     public String getCommandName() {
         return name;
     }
 
+    @NotNull
     public static MealsBotCommands getCommandByName(@NotNull String name) {
         if (name != null) {
             for (MealsBotCommands command : values()) {

@@ -10,8 +10,7 @@ import java.util.List;
 
 public class MealsReplyKeyboard {
 
-    @NotNull
-    private ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+    private final ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
     public MealsReplyKeyboard() {
         List<KeyboardRow> rows = new ArrayList<>(2);
@@ -21,6 +20,7 @@ public class MealsReplyKeyboard {
         firstRow.add(MealsBotCommands.CAL.getCommandName());
         firstRow.add(MealsBotCommands.PFC.getCommandName());
         firstRow.add(MealsBotCommands.FAV.getCommandName());
+        firstRow.add(MealsBotCommands.FIND.getCommandName());
 
         secondRow.add(MealsBotCommands.RECOMMEND.getCommandName());
         secondRow.add(MealsBotCommands.ADDTOFAV.getCommandName());

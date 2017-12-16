@@ -1,9 +1,11 @@
 package mealsbot.requests;
 
 import com.google.common.collect.Multimap;
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.data.Recipe;
+import mealsbot.data.RecommendCache;
 import mealsbot.http.RecipesRequester;
 import mealsbot.utils.FormattingUtils;
 import org.slf4j.Logger;
@@ -29,16 +31,23 @@ public class FindReply implements Replier  {
 
     private final RecipesRequester recipesRequester;
 
+    private final RecommendCache recommendCache;
+
+    @Nullable
     private volatile List<Recipe> allRequestedRecipes;
 
+    @NotNull
     private volatile String lastRequest = "";
 
+    @Nullable
     private Multimap<String, String> allTitleRecipes;
 
+    @Nullable
     private volatile Recipe currentRecipe;
 
-    public FindReply(RecipesRequester recipesRequester) {
+    public FindReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
         this.recipesRequester = recipesRequester;
+        this.recommendCache = recommendCache;
     }
 
     @Override
@@ -64,12 +73,18 @@ public class FindReply implements Replier  {
     public void reply(@NotNull Update update) {
         String reply = "";
         String request = update.getMessage().getText();
+
+        if (request == null) {
+            answer(update, RETRY_MSG);
+            return;
+        }
+
         switch (lastRequest) {
             case "":
                 reply = getReplyForEmptyString(request);
                 break;
             case "find":
-                reply = getReplyForFind(request);
+                reply = getReplyForFind(update.getMessage().getFrom().getId(), request);
                 break;
             case "short":
                 reply = getReplyForShort(request);
@@ -81,7 +96,8 @@ public class FindReply implements Replier  {
         answer(update, reply);
     }
 
-    private String getReplyForEmptyString(String request) {
+    @NotNull
+    private String getReplyForEmptyString(@NotNull String request) {
         String reply;
         lastRequest = "find";
         try {
@@ -98,7 +114,8 @@ public class FindReply implements Replier  {
         return reply;
     }
 
-    private String getReplyForFind(String request) {
+    @NotNull
+    private String getReplyForFind(@NotNull Integer personId, @NotNull String request) {
         lastRequest = "";
         String reply = "";
         try {
@@ -109,6 +126,7 @@ public class FindReply implements Replier  {
                 if (currentRecipe != null) {
                     lastRequest = "short";
                     reply = recipeToShortString(currentRecipe);
+                    recommendCache.addRecommended(personId, currentRecipe);
                 } else {
                     reply = RETRY_MSG;
                 }
@@ -120,7 +138,8 @@ public class FindReply implements Replier  {
         return reply;
     }
 
-    private String getReplyForShort(String request) {
+    @NotNull
+    private String getReplyForShort(@NotNull String request) {
         lastRequest = "";
         String reply = "";
         if (request.equals("more")) {
@@ -144,6 +163,7 @@ public class FindReply implements Replier  {
         return reply;
     }
 
+    @NotNull
     private String getReplyForMore() {
         String reply;
         lastRequest = "done";
@@ -160,12 +180,13 @@ public class FindReply implements Replier  {
         return reply;
     }
 
-    private String printShortRecipes(Collection<Recipe> allRequestedRecipes) {
+    @NotNull
+    private String printShortRecipes(@NotNull Collection<Recipe> allRequestedRecipes) {
         StringBuilder answer = new StringBuilder("We found " + allRequestedRecipes.size());
         if (allRequestedRecipes.size() > 1)
-             answer.append("recipes:\n");
+             answer.append(" recipes:\n");
         else {
-            answer.append("recipe:\n");
+            answer.append(" recipe:\n");
         }
 
         int num = 1;
@@ -179,11 +200,11 @@ public class FindReply implements Replier  {
                     "or 0 if you want to try something else");
         }
         return answer.toString();
-
     }
 
-    private List<Recipe> getRequestRecipes(Multimap<String, String> allTitleRecipes,
-                                                String requestRecipe) throws IOException, ParseException {
+    @NotNull
+    private List<Recipe> getRequestRecipes(@Nullable Multimap<String, String> allTitleRecipes,
+                                           @NotNull String requestRecipe) throws IOException, ParseException {
         List<Recipe> allRequestedRecipes = Collections.synchronizedList(new ArrayList<Recipe>());
 
         Collection<String> recipesId = allTitleRecipes.get(requestRecipe);

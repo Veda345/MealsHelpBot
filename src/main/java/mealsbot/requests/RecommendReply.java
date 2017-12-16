@@ -1,5 +1,6 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.data.Recipe;
@@ -19,17 +20,20 @@ public class RecommendReply implements Replier {
 
     private final static Logger logger = LoggerFactory.getLogger(RecommendReply.class);
 
-    private MealsBotCommands replierType = MealsBotCommands.RECOMMEND;
+    private final MealsBotCommands replierType = MealsBotCommands.RECOMMEND;
 
     private static final String REQUEST_MORE = "more";
+
     private static final String REQUEST_NEXT = "next";
 
     private final RecipesRequester recipesRequester;
 
     private final RecommendCache recommendCache;
 
+    @Nullable
     private volatile Recipe currentRecipe;
 
+    @Nullable
     private volatile State currentState;
 
 
@@ -102,6 +106,7 @@ public class RecommendReply implements Replier {
         ReplyCallback.sendReply(message);
     }
 
+    @NotNull
     private SendMessage createSendMessage(@NotNull Update update, String text) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
@@ -110,6 +115,7 @@ public class RecommendReply implements Replier {
         return message;
     }
 
+    @NotNull
     private void sendReplyForNext(@NotNull Update update) {
         if (currentRecipe == null) {
             currentState = new ErrorState();
@@ -120,6 +126,7 @@ public class RecommendReply implements Replier {
         ReplyCallback.sendReply(message);
     }
 
+    @NotNull
     static String recipeToShortString(@NotNull Recipe recipe) {
         return "What about \"" + FormattingUtils.formatTitle(recipe.title) + "\"?\n" +
                 FormattingUtils.formatBoldText("Time for cooking: ") + recipe.time + " min\n" +

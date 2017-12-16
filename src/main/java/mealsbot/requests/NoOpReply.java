@@ -11,6 +11,8 @@ public class NoOpReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.NONE;
 
+    private static final String tryAnother = "Try another command!";
+
     @Override
     public void initCall(@NotNull Update update) {
         reply(update);
@@ -18,10 +20,10 @@ public class NoOpReply implements Replier {
 
     @Override
     public void reply(@NotNull Update update) {
-        answer(update, "Try another command!");
+        answer(update, tryAnother);
     }
 
-    private void answer(@NotNull Update update, String reply) {
+    private void answer(@NotNull Update update, @NotNull String reply) {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);

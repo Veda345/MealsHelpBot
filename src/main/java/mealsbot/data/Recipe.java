@@ -14,16 +14,21 @@ public class Recipe {
     @NotNull
     public String title;
 
+    @Nullable
     public String imgUrl;
 
+    @Nullable
     public List<Stage> stages;
 
-    public int time;
+    @Nullable
+    public Integer time;
 
-    public int energy;
+    @Nullable
+    public Integer energy;
 
     @VisibleForTesting
-    public Recipe(@NotNull String id, @NotNull String title, int time, int energy, @NotNull String imgUrl, @NotNull List<Stage> stages) {
+    public Recipe(@NotNull String id, @NotNull String title, @Nullable Integer time, @Nullable Integer energy,
+                  @Nullable String imgUrl, @Nullable List<Stage> stages) {
         this.id = id;
         this.title = title;
         this.time = time;
@@ -35,7 +40,7 @@ public class Recipe {
     public static class Stage {
         @NotNull
         public List<String> steps;
-        @NotNull
+        @Nullable
         public String imgUrl;
 
         public Stage(@NotNull List<String> steps, @Nullable String imgUrl) {
@@ -45,17 +50,23 @@ public class Recipe {
     }
 
     public static class Builder {
+        @NotNull
+        private String id;
+
+        @NotNull
+        private String title;
 
         @Nullable
-        private String id;
-        @Nullable
-        private String title;
-        @Nullable
         private String imgUrl;
+
         @Nullable
         private List<Stage> stages;
-        private int time;
-        private int energy;
+
+        @Nullable
+        private Integer time;
+
+        @Nullable
+        private Integer energy;
 
         @NotNull
         public Builder id(@NotNull String id) {
@@ -100,6 +111,5 @@ public class Recipe {
         public Recipe build() {
             return new Recipe(id, title, time, energy, imgUrl, stages);
         }
-
     }
 }

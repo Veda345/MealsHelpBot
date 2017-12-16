@@ -42,7 +42,7 @@ public class AppConfiguration {
 
     @Bean
     public FindReply findReply() {
-        return new FindReply(recipesRequester());
+        return new FindReply(recipesRequester(), recommendCache());
     }
 
     @Bean
