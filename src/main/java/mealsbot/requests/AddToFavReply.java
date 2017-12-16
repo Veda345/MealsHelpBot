@@ -28,15 +28,11 @@ public class AddToFavReply implements Replier {
     @Nullable
     private ReplyCallback replyCallback;
 
-    /**
-     * String meaning that user doesn't get any recommendation after reboot
-     */
-    private final static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
-
     public AddToFavReply(RecommendCache recommendCache) {
         this.recommendCache = recommendCache;
     }
 
+    @Override
     public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
@@ -53,7 +49,7 @@ public class AddToFavReply implements Replier {
         Recipe recommended = recommendCache.getRecommended(personId);
         String reply;
         if (recommended == null) {
-            reply = UNKNOWN_RECOMMENDATION_MSG;
+            reply = "You don't have any recent recommendation";
         }
         else {
             try {
