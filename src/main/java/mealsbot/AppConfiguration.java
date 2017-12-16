@@ -1,6 +1,7 @@
 package mealsbot;
 
 import mealsbot.bot.MealsHelpBot;
+import mealsbot.bot.ReplyCallback;
 import mealsbot.data.RecommendCache;
 import mealsbot.http.JSONParser;
 import mealsbot.http.RecipesRequester;
@@ -9,10 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -98,6 +101,7 @@ public class AppConfiguration {
     @Bean
     public MealsHelpBot mealsHelpBot() {
         MealsHelpBot mealsHelpBot = new MealsHelpBot(repliers());
+        mealsHelpBot.initRepliers();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
             telegramBotsApi.registerBot(mealsHelpBot);

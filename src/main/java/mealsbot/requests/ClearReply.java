@@ -1,6 +1,7 @@
 package mealsbot.requests;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.data.RecommendCache;
@@ -14,8 +15,15 @@ public class ClearReply implements Replier {
 
     private final RecommendCache recommendCache;
 
+    @Nullable
+    private ReplyCallback replyCallback = null;
+
     public ClearReply(RecommendCache recommendCache) {
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -39,7 +47,7 @@ public class ClearReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

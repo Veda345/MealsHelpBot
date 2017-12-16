@@ -26,6 +26,13 @@ public class MealsHelpBot extends TelegramLongPollingBot {
         command2Replier.putAll(repliers.stream().collect(Collectors.toMap(Replier::getReplierType, Function.identity())));
     }
 
+    public void initRepliers() {
+        ReplyCallback callback = new ReplyCallback(this);
+        for (Replier replier: command2Replier.values()) {
+            replier.setReplyCallback(callback);
+        }
+    }
+
     @Override
     public void onUpdateReceived(@NotNull Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {

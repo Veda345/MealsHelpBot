@@ -36,10 +36,16 @@ public class RecommendReply implements Replier {
     @Nullable
     private volatile State currentState;
 
+    @Nullable
+    private ReplyCallback replyCallback = null;
 
     public RecommendReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
         this.recipesRequester = recipesRequester;
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -68,11 +74,11 @@ public class RecommendReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
 
         message.setText("If you like your last recommended meal you can use \'/addtofav\' to save it to your favourite," +
                 " or type \"more\" for getting cooking steps");
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override
@@ -103,7 +109,7 @@ public class RecommendReply implements Replier {
         }
 
         SendMessage message = createSendMessage(update, currentState.getReply());
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @NotNull
@@ -123,7 +129,7 @@ public class RecommendReply implements Replier {
         String reply = currentState.getReply();
         SendMessage message = createSendMessage(update,
                 reply.equals("\n") || reply.equals("") ? "Try typing \"next\" again" : reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @NotNull

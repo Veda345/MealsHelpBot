@@ -1,5 +1,6 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.db.DbAccessor;
@@ -16,6 +17,13 @@ import java.util.List;
 public class FavReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.FAV;
+
+    @Nullable
+    private ReplyCallback replyCallback = null;
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
+    }
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -47,7 +55,7 @@ public class FavReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

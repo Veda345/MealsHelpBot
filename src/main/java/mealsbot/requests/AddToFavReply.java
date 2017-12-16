@@ -1,6 +1,7 @@
 package mealsbot.requests;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.data.Recipe;
@@ -24,6 +25,9 @@ public class AddToFavReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.ADDTOFAV;
 
+    @Nullable
+    private ReplyCallback replyCallback;
+
     /**
      * String meaning that user doesn't get any recommendation after reboot
      */
@@ -31,6 +35,10 @@ public class AddToFavReply implements Replier {
 
     public AddToFavReply(RecommendCache recommendCache) {
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -65,7 +73,7 @@ public class AddToFavReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

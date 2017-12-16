@@ -23,7 +23,7 @@ import java.util.List;
 
 import static mealsbot.requests.RecommendReply.recipeToShortString;
 
-public class FindReply implements Replier  {
+public class FindReply implements Replier {
 
     private final static Logger logger = LoggerFactory.getLogger(RecommendReply.class);
 
@@ -45,9 +45,16 @@ public class FindReply implements Replier  {
     @Nullable
     private volatile Recipe currentRecipe;
 
+    @Nullable
+    private ReplyCallback replyCallback = null;
+
     public FindReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
         this.recipesRequester = recipesRequester;
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -66,7 +73,7 @@ public class FindReply implements Replier  {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

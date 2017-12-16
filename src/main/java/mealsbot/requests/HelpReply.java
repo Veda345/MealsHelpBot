@@ -1,5 +1,6 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import com.sun.istack.internal.NotNull;
@@ -9,6 +10,13 @@ import org.telegram.telegrambots.api.objects.Update;
 public class HelpReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.HELP;
+
+    @Nullable
+    private ReplyCallback replyCallback = null;
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
+    }
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -29,7 +37,7 @@ public class HelpReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override
