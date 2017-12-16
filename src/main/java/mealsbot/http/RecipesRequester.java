@@ -27,7 +27,8 @@ public class RecipesRequester {
 
     private final JSONParser jsonParser;
 
-    private Map<String, Recipe> allRecipes = new HashMap<>(30);
+    @Nullable
+    private volatile Map<String, Recipe> allRecipes = new HashMap<>(30);
 
     private final Multimap<String, String> allTitleRecipes = HashMultimap.create();
 
@@ -39,7 +40,7 @@ public class RecipesRequester {
 
     @Nullable
     @VisibleForTesting
-    public String requestUrl(@NotNull String inputUrl) throws IOException {
+    String requestUrl(@NotNull String inputUrl) throws IOException {
         URL url = new URL(inputUrl);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();
         request.connect();
@@ -77,12 +78,8 @@ public class RecipesRequester {
         try {
             if (allTitleRecipes.size() == 0) {
                 List<Recipe> recipes = jsonParser.parseRecipes(requestUrl(RECIPES_URL));
-                for (Recipe recipe : recipes) {
-                    String[] titleWords = recipe.title.split("\\s+");
-                    for (String titleWord : titleWords) {
-                        allTitleRecipes.put(titleWord.toLowerCase(), recipe.id);
-                    }
-                }
+                recipes.forEach(recipe -> Arrays.stream(recipe.title.split("\\s+"))
+                        .forEach(titleWord -> allTitleRecipes.put(titleWord.toLowerCase(), recipe.id)));
             }
             return allTitleRecipes;
         } catch (ParseException e) {

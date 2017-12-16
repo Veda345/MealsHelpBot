@@ -15,8 +15,9 @@ public class ReplyCallback {
 
     private static Logger logger = LoggerFactory.getLogger(ReplyCallback.class);
 
-    private static MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
+    private final static MealsReplyKeyboard replyKeyboard = new MealsReplyKeyboard();
 
+    @NotNull
     private static MealsHelpBot mealsHelpBot;
 
     @Autowired

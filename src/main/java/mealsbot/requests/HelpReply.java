@@ -10,7 +10,6 @@ public class HelpReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.HELP;
 
-
     @Override
     public void initCall(@NotNull Update update) {
         reply(update);
@@ -22,7 +21,8 @@ public class HelpReply implements Replier {
                 "\'/pfc\' for getting protein, fat and carb for product info,\n" +
                 "\'/recommend\' for getting an advice,\n" +
                 "\'/fav\' for getting your favourite recipes,\n" +
-                "\'/addtofav\' to save your recent recommendation");
+                "\'/addtofav\' to save your recent recommendation,\n" +
+                "\'/find\' to find recipes with some words in title");
     }
 
     private void answer(@NotNull Update update, @NotNull String reply) {

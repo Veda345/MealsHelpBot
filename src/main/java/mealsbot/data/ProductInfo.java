@@ -1,23 +1,31 @@
 package mealsbot.data;
 
+import com.sun.istack.internal.Nullable;
+
 import javax.validation.constraints.NotNull;
 
 public class ProductInfo {
 
     @NotNull
     public String name;
+
     @NotNull
     public String serving;
 
-    public long calories;
+    @Nullable
+    public Long calories;
 
-    public long fat;
+    @Nullable
+    public Long fat;
 
-    public long carbs;
+    @Nullable
+    public Long carbs;
 
-    public long protein;
+    @Nullable
+    public Long protein;
 
-    ProductInfo(String name, String serving, long calories, long fat, long carbs, long protein) {
+    private ProductInfo(@NotNull String name, @NotNull String serving, @Nullable Long calories, @Nullable Long fat,
+                @Nullable Long carbs, @Nullable Long protein) {
         this.name = name;
         this.serving = serving;
         this.calories = calories;
@@ -34,13 +42,17 @@ public class ProductInfo {
         @NotNull
         private String serving;
 
-        private long calories;
+        @Nullable
+        private Long calories;
 
-        private long fat;
+        @Nullable
+        private Long fat;
 
-        private long carbs;
+        @Nullable
+        private Long carbs;
 
-        private long protein;
+        @Nullable
+        private Long protein;
 
         public Builder name(String name) {
             this.name = name;

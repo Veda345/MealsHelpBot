@@ -27,7 +27,7 @@ public class AddToFavReply implements Replier {
     /**
      * String meaning that user doesn't get any recommendation after reboot
      */
-    private static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
+    private final static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
 
     public AddToFavReply(RecommendCache recommendCache) {
         this.recommendCache = recommendCache;
