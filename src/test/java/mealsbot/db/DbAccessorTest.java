@@ -76,8 +76,8 @@ public class DbAccessorTest {
 
         Assert.assertNotNull(milkInfo);
         Assert.assertNotNull(orangesInfo);
-        Assert.assertTrue(milkInfo.carbs >= 0);
-        Assert.assertTrue(orangesInfo.carbs >= 0);
+        Assert.assertTrue(milkInfo.calories >= 0);
+        Assert.assertTrue(orangesInfo.calories >= 0);
         Assert.assertNotEquals(milkInfo.calories, orangesInfo.calories);
 
         ProductInfo milkInfo2 = DbAccessor.getProductCalories("milk");
@@ -87,8 +87,8 @@ public class DbAccessorTest {
 
     @Test
     public void getProductPfc() throws Exception {
-        ProductInfo cheeseInfo = DbAccessor.getProductCalories("lettuce");
-        ProductInfo coffeeInfo = DbAccessor.getProductCalories("coffee");
+        ProductInfo cheeseInfo = DbAccessor.getProductPfc("lettuce");
+        ProductInfo coffeeInfo = DbAccessor.getProductPfc("coffee");
 
         Assert.assertNotNull(cheeseInfo);
         Assert.assertNotNull(coffeeInfo);
@@ -100,8 +100,8 @@ public class DbAccessorTest {
         Assert.assertTrue(cheeseInfo.fat >= 0);
         Assert.assertTrue(coffeeInfo.fat >= 0);
 
-        Assert.assertEquals(cheeseInfo.carbs, coffeeInfo.carbs);
-        Assert.assertEquals(cheeseInfo.protein, coffeeInfo.protein);
+        Assert.assertNotEquals(cheeseInfo.carbs, coffeeInfo.carbs);
+        Assert.assertNotEquals(cheeseInfo.protein, coffeeInfo.protein);
         Assert.assertEquals(cheeseInfo.fat, coffeeInfo.fat);
     }
 
