@@ -37,7 +37,7 @@ public class FindReply implements Replier {
     private volatile List<Recipe> allRequestedRecipes;
 
     @NotNull
-    private volatile String lastRequest = "start";
+    private volatile String lastRequest = "";
     @Nullable
     private Multimap<String, String> allTitleRecipes;
 
@@ -59,7 +59,7 @@ public class FindReply implements Replier {
     @Override
     public void initCall(@NotNull Update update) {
         answer(update, "What recipe do you want to find?");
-        lastRequest = "start";
+        lastRequest = "";
         try {
             allTitleRecipes = recipesRequester.requestAllTitleRecipes();
         } catch (Exception e) {
@@ -86,7 +86,7 @@ public class FindReply implements Replier {
         }
 
         switch (lastRequest) {
-            case "start":
+            case "":
                 reply = getReplyForStart(request);
                 break;
             case "find":
