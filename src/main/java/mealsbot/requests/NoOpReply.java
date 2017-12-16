@@ -1,5 +1,6 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -9,13 +10,14 @@ import javax.validation.constraints.NotNull;
 
 public class NoOpReply implements Replier {
 
-    private final MealsBotCommands replierType = MealsBotCommands.NONE;
-
-    private final ReplyCallback replyCallback;
-
     private static final String tryAnother = "Try another command!";
 
-    public NoOpReply(ReplyCallback replyCallback) {
+    private final MealsBotCommands replierType = MealsBotCommands.NONE;
+
+    @Nullable
+    private ReplyCallback replyCallback = null;
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
 

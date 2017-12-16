@@ -1,5 +1,6 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.data.ProductInfo;
@@ -13,9 +14,10 @@ public class PfcReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.PFC;
 
-    private final ReplyCallback replyCallback;
+    @Nullable
+    private ReplyCallback replyCallback = null;
 
-    public PfcReply(ReplyCallback replyCallback) {
+    public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
 

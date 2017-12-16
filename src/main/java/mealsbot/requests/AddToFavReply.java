@@ -1,6 +1,7 @@
 package mealsbot.requests;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.data.Recipe;
@@ -24,15 +25,19 @@ public class AddToFavReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.ADDTOFAV;
 
-    private final ReplyCallback replyCallback;
+    @Nullable
+    private ReplyCallback replyCallback;
 
     /**
      * String meaning that user doesn't get any recommendation after reboot
      */
     private final static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
 
-    public AddToFavReply(RecommendCache recommendCache, ReplyCallback replyCallback) {
+    public AddToFavReply(RecommendCache recommendCache) {
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
 

@@ -10,10 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -23,47 +25,47 @@ public class AppConfiguration {
 
     @Bean
     public AddToFavReply addToFavReply() {
-        return new AddToFavReply(recommendCache(), replyCallback());
+        return new AddToFavReply(recommendCache());
     }
 
     @Bean
     public CalReply calReply() {
-        return new CalReply(replyCallback());
+        return new CalReply();
     }
 
     @Bean
     public ClearReply clearReply() {
-        return new ClearReply(recommendCache(), replyCallback());
+        return new ClearReply(recommendCache());
     }
 
     @Bean
     public FavReply favReply() {
-        return new FavReply(replyCallback());
+        return new FavReply();
     }
 
     @Bean
     public FindReply findReply() {
-        return new FindReply(recipesRequester(), recommendCache(), replyCallback());
+        return new FindReply(recipesRequester(), recommendCache());
     }
 
     @Bean
     public HelpReply helpReply() {
-        return new HelpReply(replyCallback());
+        return new HelpReply();
     }
 
     @Bean
     public NoOpReply noOpReply() {
-        return new NoOpReply(replyCallback());
+        return new NoOpReply();
     }
 
     @Bean
     public PfcReply pfcReply() {
-        return new PfcReply(replyCallback());
+        return new PfcReply();
     }
 
     @Bean
     public RecommendReply recommendReply() {
-        return new RecommendReply(recipesRequester(), recommendCache(), replyCallback());
+        return new RecommendReply(recipesRequester(), recommendCache());
     }
 
     @Bean
@@ -99,6 +101,7 @@ public class AppConfiguration {
     @Bean
     public MealsHelpBot mealsHelpBot() {
         MealsHelpBot mealsHelpBot = new MealsHelpBot(repliers());
+        mealsHelpBot.initRepliers();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try {
             telegramBotsApi.registerBot(mealsHelpBot);
@@ -107,9 +110,5 @@ public class AppConfiguration {
             throw new RuntimeException(e);
         }
         return mealsHelpBot;
-    }
-
-    public ReplyCallback replyCallback() {
-        return new ReplyCallback(mealsHelpBot());
     }
 }

@@ -1,6 +1,7 @@
 package mealsbot.requests;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import mealsbot.data.RecommendCache;
@@ -14,10 +15,14 @@ public class ClearReply implements Replier {
 
     private final RecommendCache recommendCache;
 
-    private final ReplyCallback replyCallback;
+    @Nullable
+    private ReplyCallback replyCallback = null;
 
-    public ClearReply(RecommendCache recommendCache, ReplyCallback replyCallback) {
+    public ClearReply(RecommendCache recommendCache) {
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
 

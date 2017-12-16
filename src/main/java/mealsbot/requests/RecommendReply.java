@@ -30,18 +30,21 @@ public class RecommendReply implements Replier {
 
     private final RecommendCache recommendCache;
 
-    private final ReplyCallback replyCallback;
-
     @Nullable
     private volatile Recipe currentRecipe;
 
     @Nullable
     private volatile State currentState;
 
+    @Nullable
+    private ReplyCallback replyCallback = null;
 
-    public RecommendReply(RecipesRequester recipesRequester, RecommendCache recommendCache, ReplyCallback replyCallback) {
+    public RecommendReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
         this.recipesRequester = recipesRequester;
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
 

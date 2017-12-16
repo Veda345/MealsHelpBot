@@ -1,5 +1,6 @@
 package mealsbot.requests;
 
+import com.sun.istack.internal.Nullable;
 import mealsbot.bot.MealsBotCommands;
 import mealsbot.bot.ReplyCallback;
 import com.sun.istack.internal.NotNull;
@@ -12,9 +13,10 @@ public class CalReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.CAL;
 
-    private final ReplyCallback replyCallback;
+    @Nullable
+    private ReplyCallback replyCallback = null;
 
-    public CalReply(ReplyCallback replyCallback) {
+    public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
 

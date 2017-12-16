@@ -23,7 +23,7 @@ import java.util.List;
 
 import static mealsbot.requests.RecommendReply.recipeToShortString;
 
-public class FindReply implements Replier  {
+public class FindReply implements Replier {
 
     private final static Logger logger = LoggerFactory.getLogger(RecommendReply.class);
 
@@ -32,8 +32,6 @@ public class FindReply implements Replier  {
     private final RecipesRequester recipesRequester;
 
     private final RecommendCache recommendCache;
-
-    private final ReplyCallback replyCallback;
 
     @Nullable
     private volatile List<Recipe> allRequestedRecipes;
@@ -47,9 +45,15 @@ public class FindReply implements Replier  {
     @Nullable
     private volatile Recipe currentRecipe;
 
-    public FindReply(RecipesRequester recipesRequester, RecommendCache recommendCache, ReplyCallback replyCallback) {
+    @Nullable
+    private ReplyCallback replyCallback = null;
+
+    public FindReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
         this.recipesRequester = recipesRequester;
         this.recommendCache = recommendCache;
+    }
+
+    public void setReplyCallback(ReplyCallback replyCallback) {
         this.replyCallback = replyCallback;
     }
 
