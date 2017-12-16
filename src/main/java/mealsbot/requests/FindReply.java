@@ -121,7 +121,7 @@ public class FindReply implements Replier  {
         try {
             int num = Integer.parseInt(request) - 1;
             final List<Recipe> allRequestedRecipes = this.allRequestedRecipes;
-            if (num >= 0 && num <= allRequestedRecipes.size()) {
+            if (num >= 0 && num < allRequestedRecipes.size()) {
                 currentRecipe = allRequestedRecipes.get(num);
                 if (currentRecipe != null) {
                     lastRequest = "short";
@@ -130,6 +130,9 @@ public class FindReply implements Replier  {
                 } else {
                     reply = RETRY_MSG;
                 }
+            }
+            else {
+                reply = RETRY_MSG;
             }
         } catch (NumberFormatException nx) {
             logger.error("Can't parse request number {}", request);
