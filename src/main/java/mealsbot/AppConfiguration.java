@@ -1,6 +1,7 @@
 package mealsbot;
 
 import mealsbot.bot.MealsHelpBot;
+import mealsbot.bot.ReplyCallback;
 import mealsbot.data.RecommendCache;
 import mealsbot.http.JSONParser;
 import mealsbot.http.RecipesRequester;
@@ -22,47 +23,47 @@ public class AppConfiguration {
 
     @Bean
     public AddToFavReply addToFavReply() {
-        return new AddToFavReply(recommendCache());
+        return new AddToFavReply(recommendCache(), replyCallback());
     }
 
     @Bean
     public CalReply calReply() {
-        return new CalReply();
+        return new CalReply(replyCallback());
     }
 
     @Bean
     public ClearReply clearReply() {
-        return new ClearReply(recommendCache());
+        return new ClearReply(recommendCache(), replyCallback());
     }
 
     @Bean
     public FavReply favReply() {
-        return new FavReply();
+        return new FavReply(replyCallback());
     }
 
     @Bean
     public FindReply findReply() {
-        return new FindReply(recipesRequester(), recommendCache());
+        return new FindReply(recipesRequester(), recommendCache(), replyCallback());
     }
 
     @Bean
     public HelpReply helpReply() {
-        return new HelpReply();
+        return new HelpReply(replyCallback());
     }
 
     @Bean
     public NoOpReply noOpReply() {
-        return new NoOpReply();
+        return new NoOpReply(replyCallback());
     }
 
     @Bean
     public PfcReply pfcReply() {
-        return new PfcReply();
+        return new PfcReply(replyCallback());
     }
 
     @Bean
     public RecommendReply recommendReply() {
-        return new RecommendReply(recipesRequester(), recommendCache());
+        return new RecommendReply(recipesRequester(), recommendCache(), replyCallback());
     }
 
     @Bean
@@ -106,5 +107,9 @@ public class AppConfiguration {
             throw new RuntimeException(e);
         }
         return mealsHelpBot;
+    }
+
+    public ReplyCallback replyCallback() {
+        return new ReplyCallback(mealsHelpBot());
     }
 }

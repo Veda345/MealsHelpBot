@@ -30,6 +30,8 @@ public class RecommendReply implements Replier {
 
     private final RecommendCache recommendCache;
 
+    private final ReplyCallback replyCallback;
+
     @Nullable
     private volatile Recipe currentRecipe;
 
@@ -37,9 +39,10 @@ public class RecommendReply implements Replier {
     private volatile State currentState;
 
 
-    public RecommendReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
+    public RecommendReply(RecipesRequester recipesRequester, RecommendCache recommendCache, ReplyCallback replyCallback) {
         this.recipesRequester = recipesRequester;
         this.recommendCache = recommendCache;
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -68,11 +71,11 @@ public class RecommendReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
 
         message.setText("If you like your last recommended meal you can use \'/addtofav\' to save it to your favourite," +
                 " or type \"more\" for getting cooking steps");
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override
@@ -103,7 +106,7 @@ public class RecommendReply implements Replier {
         }
 
         SendMessage message = createSendMessage(update, currentState.getReply());
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @NotNull
@@ -123,7 +126,7 @@ public class RecommendReply implements Replier {
         String reply = currentState.getReply();
         SendMessage message = createSendMessage(update,
                 reply.equals("\n") || reply.equals("") ? "Try typing \"next\" again" : reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @NotNull

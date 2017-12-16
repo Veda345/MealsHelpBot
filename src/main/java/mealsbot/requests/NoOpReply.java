@@ -11,7 +11,13 @@ public class NoOpReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.NONE;
 
+    private final ReplyCallback replyCallback;
+
     private static final String tryAnother = "Try another command!";
+
+    public NoOpReply(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
+    }
 
     @Override
     public void initCall(@NotNull Update update) {
@@ -27,7 +33,7 @@ public class NoOpReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

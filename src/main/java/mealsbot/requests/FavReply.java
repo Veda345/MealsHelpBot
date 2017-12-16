@@ -17,6 +17,12 @@ public class FavReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.FAV;
 
+    private final ReplyCallback replyCallback;
+
+    public FavReply(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
+    }
+
     @Override
     public void initCall(@NotNull Update update) {
         reply(update);
@@ -47,7 +53,7 @@ public class FavReply implements Replier {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

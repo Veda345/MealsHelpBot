@@ -10,6 +10,12 @@ public class HelpReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.HELP;
 
+    private final ReplyCallback replyCallback;
+
+    public HelpReply(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
+    }
+
     @Override
     public void initCall(@NotNull Update update) {
         reply(update);
@@ -29,7 +35,7 @@ public class HelpReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

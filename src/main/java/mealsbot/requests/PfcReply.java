@@ -13,6 +13,12 @@ public class PfcReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.PFC;
 
+    private final ReplyCallback replyCallback;
+
+    public PfcReply(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
+    }
+
     @Override
     public void initCall(@NotNull Update update) {
         answer(update, "The protein, fat and carb values of which product do you want to know?");
@@ -36,7 +42,7 @@ public class PfcReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

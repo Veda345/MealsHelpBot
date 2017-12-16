@@ -24,13 +24,16 @@ public class AddToFavReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.ADDTOFAV;
 
+    private final ReplyCallback replyCallback;
+
     /**
      * String meaning that user doesn't get any recommendation after reboot
      */
     private final static String UNKNOWN_RECOMMENDATION_MSG = "You don't have any recent recommendation";
 
-    public AddToFavReply(RecommendCache recommendCache) {
+    public AddToFavReply(RecommendCache recommendCache, ReplyCallback replyCallback) {
         this.recommendCache = recommendCache;
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class AddToFavReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

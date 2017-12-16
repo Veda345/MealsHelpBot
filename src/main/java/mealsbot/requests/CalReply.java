@@ -12,6 +12,12 @@ public class CalReply implements Replier {
 
     private final MealsBotCommands replierType = MealsBotCommands.CAL;
 
+    private final ReplyCallback replyCallback;
+
+    public CalReply(ReplyCallback replyCallback) {
+        this.replyCallback = replyCallback;
+    }
+
     @Override
     public void initCall(@NotNull Update update) {
         answer(update, "The caloric value of which product do you want to know?");
@@ -35,7 +41,7 @@ public class CalReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

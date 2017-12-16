@@ -14,8 +14,11 @@ public class ClearReply implements Replier {
 
     private final RecommendCache recommendCache;
 
-    public ClearReply(RecommendCache recommendCache) {
+    private final ReplyCallback replyCallback;
+
+    public ClearReply(RecommendCache recommendCache, ReplyCallback replyCallback) {
         this.recommendCache = recommendCache;
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class ClearReply implements Replier {
         SendMessage message = new SendMessage()
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override

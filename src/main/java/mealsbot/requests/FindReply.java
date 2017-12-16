@@ -33,6 +33,8 @@ public class FindReply implements Replier  {
 
     private final RecommendCache recommendCache;
 
+    private final ReplyCallback replyCallback;
+
     @Nullable
     private volatile List<Recipe> allRequestedRecipes;
 
@@ -45,9 +47,10 @@ public class FindReply implements Replier  {
     @Nullable
     private volatile Recipe currentRecipe;
 
-    public FindReply(RecipesRequester recipesRequester, RecommendCache recommendCache) {
+    public FindReply(RecipesRequester recipesRequester, RecommendCache recommendCache, ReplyCallback replyCallback) {
         this.recipesRequester = recipesRequester;
         this.recommendCache = recommendCache;
+        this.replyCallback = replyCallback;
     }
 
     @Override
@@ -66,7 +69,7 @@ public class FindReply implements Replier  {
                 .setChatId(update.getMessage().getChatId())
                 .setText(reply);
         message.enableHtml(true);
-        ReplyCallback.sendReply(message);
+        replyCallback.sendReply(message);
     }
 
     @Override
