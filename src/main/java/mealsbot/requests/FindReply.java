@@ -37,8 +37,7 @@ public class FindReply implements Replier {
     private volatile List<Recipe> allRequestedRecipes;
 
     @NotNull
-    private volatile String lastRequest = "";
-
+    private volatile String lastRequest = "start";
     @Nullable
     private Multimap<String, String> allTitleRecipes;
 
@@ -60,7 +59,7 @@ public class FindReply implements Replier {
     @Override
     public void initCall(@NotNull Update update) {
         answer(update, "What recipe do you want to find?");
-        lastRequest = "";
+        lastRequest = "start";
         try {
             allTitleRecipes = recipesRequester.requestAllTitleRecipes();
         } catch (Exception e) {
@@ -87,24 +86,21 @@ public class FindReply implements Replier {
         }
 
         switch (lastRequest) {
-            case "":
-                reply = getReplyForEmptyString(request);
+            case "start":
+                reply = getReplyForStart(request);
                 break;
             case "find":
                 reply = getReplyForFind(update.getMessage().getFrom().getId(), request);
                 break;
             case "short":
-                reply = getReplyForShort(request);
-                break;
-            case "more":
-                reply = getReplyForMore();
+                reply = getReplyForMore(request);
                 break;
         }
         answer(update, reply);
     }
 
     @NotNull
-    private String getReplyForEmptyString(@NotNull String request) {
+    private String getReplyForStart(@NotNull String request) {
         String reply;
         lastRequest = "find";
         try {
@@ -134,6 +130,8 @@ public class FindReply implements Replier {
                     lastRequest = "short";
                     reply = recipeToShortString(currentRecipe);
                     recommendCache.addRecommended(personId, currentRecipe);
+                    reply += "If you want to see recipe, print " +
+                            FormattingUtils.formatBoldText("\"next\"\n");
                 } else {
                     reply = RETRY_MSG;
                 }
@@ -148,8 +146,9 @@ public class FindReply implements Replier {
         return reply;
     }
 
+
     @NotNull
-    private String getReplyForShort(@NotNull String request) {
+    private String getReplyForMore(@NotNull String request) {
         lastRequest = "";
         String reply = "";
         if (request.equals("more")) {
@@ -157,9 +156,16 @@ public class FindReply implements Replier {
             if (currentRecipe != null) {
                 try {
                     currentRecipe = recipesRequester.requestFullRecipe(currentRecipe.id);
-                    reply = FormattingUtils.formatTitle(currentRecipe.title) + "\n" +
-                            "If you want to se whole recipe, please, insert" +
-                            FormattingUtils.formatBoldText("\"next\"\n");
+                    if (currentRecipe == null) {
+                        reply = "Sorry, something went wrong";
+                    }
+                    else {
+                        StringBuilder recipeText = new StringBuilder();
+                        for (Recipe.Stage stage : currentRecipe.stages) {
+                            stage.steps.forEach(step -> recipeText.append(FormattingUtils.formatPointedText(step)));
+                        }
+                        reply = recipeText.toString();
+                    }
                 } catch (Exception e) {
                     logger.error("Error while requesting and parsing recipe at find for request {}", request, e);
                     reply = Replier.RETRY_MSG;
@@ -170,23 +176,7 @@ public class FindReply implements Replier {
                 reply = Replier.RETRY_MSG;
             }
         }
-        return reply;
-    }
 
-    @NotNull
-    private String getReplyForMore() {
-        String reply;
-        lastRequest = "done";
-        if (currentRecipe == null) {
-            reply = "Sorry, something went wrong";
-        }
-        else {
-            StringBuilder recipeText = new StringBuilder();
-            for (Recipe.Stage stage : currentRecipe.stages) {
-                stage.steps.forEach(step -> recipeText.append(FormattingUtils.formatPointedText(step)));
-            }
-            reply = recipeText.toString();
-        }
         return reply;
     }
 

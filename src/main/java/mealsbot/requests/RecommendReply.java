@@ -60,7 +60,7 @@ public class RecommendReply implements Replier {
         }
 
         if (recipe != null) {
-            reply = recipeToShortString(recipe);
+            reply = "What about \"" + recipeToShortString(recipe);
             try {
                 recommendCache.addRecommended(update.getMessage().getFrom().getId(), recipesRequester.requestFullRecipe(recipe.id));
             } catch (IOException | ParseException e) {
@@ -134,7 +134,7 @@ public class RecommendReply implements Replier {
 
     @NotNull
     static String recipeToShortString(@NotNull Recipe recipe) {
-        return "What about \"" + FormattingUtils.formatTitle(recipe.title) + "\"?\n" +
+        return  FormattingUtils.formatTitle(recipe.title) + "\"?\n" +
                 FormattingUtils.formatBoldText("Time for cooking: ") + recipe.time + " min\n" +
                 FormattingUtils.formatBoldText("Energy: ") + recipe.energy + " Kcal\n" +
                 recipe.imgUrl + "\n";
@@ -150,7 +150,7 @@ public class RecommendReply implements Replier {
         String getReply() {
             String result = FormattingUtils.formatTitle(currentRecipe.title) + "\n"+
                     "Чтобы увидеть рецепт по шагам, введите "+
-                    FormattingUtils.formatBoldText("\"next\"\n");
+                    FormattingUtils.formatBoldText("\"more\"\n");
             currentState = new StepState(0);
             return result;
         }
